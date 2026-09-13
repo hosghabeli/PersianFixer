@@ -1,0 +1,24 @@
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Backups & temporary files
+*.bak
+*.tmp
+*.log
+app.asar.patched
+app.asar.backup
+
+# Generated temporary shortcut icons
+app_icon_*.ico
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
