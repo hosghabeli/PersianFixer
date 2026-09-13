@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 import shutil
 import subprocess
@@ -11,8 +11,33 @@ ANTIGRAVITY_ASAR = os.path.join(ANTIGRAVITY_RESOURCES, "app.asar")
 ANTIGRAVITY_PATCHED = os.path.join(ANTIGRAVITY_RESOURCES, "app.asar.patched")
 ANTIGRAVITY_BAK = os.path.join(ANTIGRAVITY_RESOURCES, "app.asar.bak")
 
-CLAUDE_SOURCE_DIR = r"C:\Program Files\WindowsApps\Claude_1.40609.0.0_x64__pzs8sxrjxfjjc\app"
-CLAUDE_SOURCE_ASAR = os.path.join(CLAUDE_SOURCE_DIR, "resources", "app.asar")
+def find_claude_source_dir():
+    # 1. Check standard LocalAppData
+    local_app = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Claude")
+    if os.path.exists(os.path.join(local_app, "claude.exe")):
+        return local_app
+    # 2. Check WindowsApps Appx package
+    try:
+        ps_cmd = "(Get-AppxPackage -Name '*claude*').InstallLocation"
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", ps_cmd],
+            creationflags=subprocess.CREATE_NO_WINDOW
+        ).decode().strip()
+        if out:
+            app_dir = os.path.join(out, "app")
+            if os.path.exists(app_dir):
+                return app_dir
+            if os.path.exists(out):
+                return out
+    except Exception:
+        pass
+    hardcoded = r"C:\Program Files\WindowsApps\Claude_1.40609.0.0_x64__pzs8sxrjxfjjc\app"
+    if os.path.exists(hardcoded):
+        return hardcoded
+    return ""
+
+CLAUDE_SOURCE_DIR = find_claude_source_dir()
+CLAUDE_SOURCE_ASAR = os.path.join(CLAUDE_SOURCE_DIR, "resources", "app.asar") if CLAUDE_SOURCE_DIR else ""
 CLAUDE_TARGET_DIR = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Claude-Persian")
 CLAUDE_TARGET_EXE = os.path.join(CLAUDE_TARGET_DIR, "claude.exe")
 CLAUDE_TARGET_ASAR = os.path.join(CLAUDE_TARGET_DIR, "resources", "app.asar")
@@ -156,18 +181,39 @@ def get_claude_status():
         "running": running
     }
 
-def create_desktop_shortcut(target_exe, shortcut_name, description):
+def create_desktop_shortcut(target_exe, shortcut_name="Claude.lnk", description="اجرای Claude با فونت وزیرمتن و راست‌چین فارسی"):
     desktop = os.path.join(os.environ.get("USERPROFILE", ""), "Desktop")
-    shortcut_path = os.path.join(desktop, shortcut_name)
+    start_menu = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs")
+    
+    # Remove old Claude-Persian shortcut if present
+    old_desktop_lnk = os.path.join(desktop, "Claude-Persian.lnk")
+    if os.path.exists(old_desktop_lnk):
+        try:
+            os.remove(old_desktop_lnk)
+        except Exception:
+            pass
+
+    desktop_lnk = os.path.join(desktop, shortcut_name)
+    start_lnk = os.path.join(start_menu, shortcut_name)
 
     ps_cmd = f"""
     $WshShell = New-Object -ComObject WScript.Shell
-    $Shortcut = $WshShell.CreateShortcut('{shortcut_path}')
-    $Shortcut.TargetPath = '{target_exe}'
-    $Shortcut.WorkingDirectory = '{os.path.dirname(target_exe)}'
-    $Shortcut.Description = '{description}'
-    $Shortcut.IconLocation = '{target_exe},0'
-    $Shortcut.Save()
+    
+    # Desktop
+    $Shortcut1 = $WshShell.CreateShortcut('{desktop_lnk}')
+    $Shortcut1.TargetPath = '{target_exe}'
+    $Shortcut1.WorkingDirectory = '{os.path.dirname(target_exe)}'
+    $Shortcut1.Description = '{description}'
+    $Shortcut1.IconLocation = '{target_exe},0'
+    $Shortcut1.Save()
+
+    # Start Menu
+    $Shortcut2 = $WshShell.CreateShortcut('{start_lnk}')
+    $Shortcut2.TargetPath = '{target_exe}'
+    $Shortcut2.WorkingDirectory = '{os.path.dirname(target_exe)}'
+    $Shortcut2.Description = '{description}'
+    $Shortcut2.IconLocation = '{target_exe},0'
+    $Shortcut2.Save()
     """
     subprocess.run(
         ["powershell", "-NoProfile", "-Command", ps_cmd],
@@ -175,7 +221,7 @@ def create_desktop_shortcut(target_exe, shortcut_name, description):
     )
 
 def patch_claude():
-    if not os.path.exists(CLAUDE_SOURCE_DIR):
+    if not CLAUDE_SOURCE_DIR or not os.path.exists(CLAUDE_SOURCE_DIR):
         return False, "برنامه رسمی Claude در ویندوز یافت نشد."
 
     if is_process_running("claude.exe"):
@@ -201,10 +247,10 @@ def patch_claude():
         if proc.returncode == 0 and "SUCCESS" in proc.stdout:
             create_desktop_shortcut(
                 CLAUDE_TARGET_EXE,
-                "Claude-Persian.lnk",
+                "Claude.lnk",
                 "اجرای Claude Desktop با فونت وزیرمتن و راست‌چین فارسی"
             )
-            return True, "برنامه Claude با موفقیت پچ شد و میانبر «Claude-Persian» روی دسکتاپ ایجاد شد."
+            return True, "برنامه Claude با موفقیت پچ شد و آیکون رسمی Claude به نسخه فارسی متصل گردید."
         else:
             return False, f"خطا در پچ Claude: {proc.stderr or proc.stdout}"
     except Exception as e:
