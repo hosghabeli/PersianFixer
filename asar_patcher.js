@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const asar = require('@electron/asar');
@@ -73,16 +73,25 @@ function patchAsarExactOffset(srcAsar, destAsar, pathParts, modifier) {
     const origJsonLen = origBuf16.readUInt32LE(12);
 
     const padNeeded = origJsonLen - Buffer.byteLength(jsonStr);
-    if (padNeeded < 0) {
-        throw new Error(`New header JSON exceeds original JSON length (${origJsonLen}).`);
+    let headerBlock;
+    if (padNeeded >= 0) {
+        const paddingSpaces = ' '.repeat(padNeeded);
+        jsonStr = '{"files":' + paddingSpaces + jsonStr.substring('{"files":'.length);
+        headerBlock = Buffer.alloc(16 + origJsonLen + (originalHeaderSize - 8 - origJsonLen));
+        origBuf16.copy(headerBlock, 0, 0, 16);
+        Buffer.from(jsonStr, 'utf8').copy(headerBlock, 16);
+    } else {
+        const newJsonBuf = Buffer.from(jsonStr, 'utf8');
+        const newJsonLen = newJsonBuf.length;
+        const alignPad = (4 - (newJsonLen % 4)) % 4;
+        const newHeaderSize = 4 + 4 + newJsonLen + alignPad;
+        headerBlock = Buffer.alloc(8 + newHeaderSize);
+        headerBlock.writeUInt32LE(4, 0);
+        headerBlock.writeUInt32LE(newHeaderSize, 4);
+        headerBlock.writeUInt32LE(newHeaderSize - 4, 8);
+        headerBlock.writeUInt32LE(newJsonLen, 12);
+        newJsonBuf.copy(headerBlock, 16);
     }
-
-    const paddingSpaces = ' '.repeat(padNeeded);
-    jsonStr = '{"files":' + paddingSpaces + jsonStr.substring('{"files":'.length);
-
-    const headerBlock = Buffer.alloc(16 + origJsonLen + (originalHeaderSize - 8 - origJsonLen));
-    origBuf16.copy(headerBlock, 0, 0, 16);
-    Buffer.from(jsonStr, 'utf8').copy(headerBlock, 16);
 
     const tempDest = destAsar + '.tmp';
     const destFd = fs.openSync(tempDest, 'w');
@@ -159,7 +168,7 @@ if (require.main === module) {
             const engineCode = fs.readFileSync(enginePath, 'utf8');
 
             try {
-                if (targetFile.includes('preload.js')) {
+                if (targetFile === 'dist/preload.js') {
                     // Antigravity
                     await patchAntigravityAsar(srcAsar, destAsar, engineCode);
                 } else {
