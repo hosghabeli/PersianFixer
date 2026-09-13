@@ -1,7 +1,7 @@
 # PersianFixer 🇮🇷 🚀
 
 <div align="center">
-  <img src="icon.png" alt="PersianFixer Logo" width="128" height="128" />
+  <img src="https://files.catbox.moe/is7dtt.png" alt="PersianFixer Logo" width="128" height="128" />
   
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در Google Antigravity و Claude Desktop</h3>
   <p><strong>Smart RTL & Vazirmatn Font Engine for Antigravity & Claude Desktop (Windows)</strong></p>
