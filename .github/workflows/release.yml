@@ -1,0 +1,47 @@
+name: Build and Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Node Dependencies
+        run: npm install
+
+      - name: Package Windows ZIP
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $stage = "release_stage"
+          if (Test-Path $stage) { Remove-Item -Recurse -Force $stage }
+          New-Item -ItemType Directory -Path $stage
+
+          Copy-Item "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py", "gui.py", "patcher.py", "font_installer.py", "persian_engine.js", "asar_patcher.js", "requirements.txt", "package.json", "icon.ico", "icon.png", "README.md", "LICENSE" -Destination $stage
+          Copy-Item -Recurse "fonts" -Destination $stage
+          Copy-Item -Recurse "node_modules" -Destination $stage
+
+          $zipName = "PersianFixer-$tag-windows.zip"
+          Compress-Archive -Path "$stage/*" -DestinationPath $zipName
+          Remove-Item -Recurse -Force $stage
+          Write-Output "ZIP created: $zipName"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: PersianFixer-${{ github.ref_name }}-windows.zip
+          generate_release_notes: true
