@@ -1,6 +1,6 @@
 {
   "name": "persianfixer",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "Smart RTL and Google Vazirmatn font engine for Antigravity, Claude Desktop, OpenCode, and ChatGPT (Codex) on Windows",
   "main": "persian_engine.js",
   "scripts": {

@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.5.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.6.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -49,7 +49,7 @@
 
 ### روش ۱: دانلود بسته آماده (پیشنهادی)
 به بخش [Releases](https://github.com/hosgh/PersianFixer/releases) مراجعه کرده و آخرین نسخه فشرده را دانلود کنید:
-1. فایل زیپ `PersianFixer-v3.5.0-windows.zip` را اکسترکت کنید.
+1. فایل زیپ `PersianFixer-v3.6.0-windows.zip` را اکسترکت کنید.
 2. روی فایل **`PersianFixer.vbs`** دابل‌کلیک کنید تا برنامه باز شود.
 3. روی دکمه بزرگ **«اعمال هوشمند پچ و فونت برای تمام برنامه‌ها»** کلیک کنید!
 4. نرم‌افزارهای خود را اجرا کنید و از محیط زیبا و روان فارسی لذت ببرید.
@@ -75,7 +75,12 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.5.0 (جدید - New)
+### Version 3.6.0 (جدید - New)
+- 🎨 **بازطراحی مینیمال و کامپکت**: حذف اسکرول‌بار و یکپارچه‌سازی تمام بخش‌ها در یک پنجره ثابت و متمرکز در مانیتور.
+- ⚙️ **سیستم اتوماسیون انتشار ریلیز (CI/CD)**: افزودن گردش کار خودکار GitHub Actions و اسکریپت محلی `make_release.bat`.
+- 🔠 **رفع مشکل جابجایی کلمات در لاگ**: اعمال کاراکتر استاندارد RLM برای نظم کامل متون فارسی و انگلیسی.
+
+### Version 3.5.0
 - 🚀 **پشتیبانی از OpenCode**: اعمال فونت چشم‌نواز وزیرمتن به ادیتور و چت OpenCode.
 - 🤖 **پشتیبانی از ChatGPT (OpenAI Codex)**: پچ کامل نسخه رسمی ویندوز و رفع مشکل چپ‌چین بودن گفتگوها.
 - 🟢 **نشانگر وضعیت جامع (Master Status)**: نمایش وضعیت کلی آماده به کار بودن سیستم با یک نگاه.
