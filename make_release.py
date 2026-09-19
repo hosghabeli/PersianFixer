@@ -102,7 +102,16 @@ def main():
     )
     print("  ✓ نسخه نمایش داده شده در gui.py به‌روزرسانی شد.")
 
-    # 4. Git commit and tag
+    # 4. Update installer.iss version
+    iss_path = os.path.join(SCRIPT_DIR, "installer.iss")
+    update_file_version(
+        iss_path,
+        r'#define MyAppVersion "[0-9.]+"',
+        f'#define MyAppVersion "{new_ver}"'
+    )
+    print("  ✓ نسخه در installer.iss به‌روزرسانی شد.")
+
+    # 5. Git commit and tag
     print("\n⏳ در حال ثبت در Git و ساخت تگ...")
     try:
         subprocess.run(["git", "add", "."], cwd=SCRIPT_DIR, check=True)
@@ -141,8 +150,8 @@ def main():
 
     files_to_copy = [
         "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py",
-        "make_release.bat", "make_release.py",
-        "gui.py", "patcher.py", "font_installer.py", "persian_engine.js",
+        "make_release.bat", "make_release.py", "installer.iss",
+        "gui.py", "patcher.py", "font_installer.py", "autostart.py", "persian_engine.js",
         "asar_patcher.js", "requirements.txt", "package.json",
         "icon.ico", "icon.png", "README.md", "LICENSE"
     ]
@@ -165,9 +174,26 @@ def main():
 
     shutil.make_archive(zip_path.replace(".zip", ""), "zip", stage_dir)
     shutil.rmtree(stage_dir, ignore_errors=True)
-    print(f"  ✓ فایل فشرده با موفقیت ساخته شد: PersianFixer-{tag_name}-windows.zip")
+    print(f"  ✓ فایل فشرده پرتابل با موفقیت ساخته شد: PersianFixer-{tag_name}-windows.zip")
 
-    # 7. Create GitHub Release via API if token available
+    # 7. Local Inno Setup Installer creation
+    iscc_candidates = [
+        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Inno Setup 6", "ISCC.exe"),
+        r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+        r"C:\Program Files\Inno Setup 6\ISCC.exe"
+    ]
+    iscc_exe = next((p for p in iscc_candidates if os.path.exists(p)), None)
+    setup_path = os.path.join(SCRIPT_DIR, f"PersianFixer-{tag_name}-Setup.exe")
+
+    if iscc_exe:
+        print(f"\n⏳ در حال ساخت فایل نصبی با Inno Setup...")
+        try:
+            subprocess.run([iscc_exe, f"/DMyAppVersion={new_ver}", "installer.iss"], cwd=SCRIPT_DIR, check=True)
+            print(f"  ✓ فایل نصبی با موفقیت ساخته شد: PersianFixer-{tag_name}-Setup.exe")
+        except Exception as e:
+            print(f"  ⚠️ خطا در ساخت فایل نصبی: {e}")
+
+    # 8. Create GitHub Release via API if token available
     try:
         token = subprocess.check_output(
             ["powershell", "-NoProfile", "(git credential fill | Select-String 'password=') -replace 'password=',''"],
@@ -179,6 +205,7 @@ def main():
     if token:
         print("\n⏳ در حال ثبت Release در صفحه گیت‌هاب...")
         try:
+            has_setup = os.path.exists(setup_path)
             ps_script = f"""
             $headers = @{{
                 'Authorization' = 'token {token}'
@@ -196,18 +223,32 @@ def main():
 
             $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/hosgh/PersianFixer/releases' -Method Post -Headers $headers -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json; charset=utf-8'
             
-            $uploadUrl = $rel.upload_url.Replace('{{?name,label}}', '?name=PersianFixer-{tag_name}-windows.zip')
-            $bytes = [System.IO.File]::ReadAllBytes('{zip_path}')
-            $assetHeaders = @{{
+            # Upload ZIP
+            $uploadUrlZip = $rel.upload_url.Replace('{{?name,label}}', '?name=PersianFixer-{tag_name}-windows.zip')
+            $bytesZip = [System.IO.File]::ReadAllBytes('{zip_path}')
+            $assetHeadersZip = @{{
                 'Authorization' = 'token {token}'
                 'User-Agent' = 'PowerShell'
                 'Accept' = 'application/vnd.github.v3+json'
                 'Content-Type' = 'application/zip'
             }}
-            Invoke-RestMethod -Uri $uploadUrl -Method Post -Headers $assetHeaders -Body $bytes | Out-Null
+            Invoke-RestMethod -Uri $uploadUrlZip -Method Post -Headers $assetHeadersZip -Body $bytesZip | Out-Null
+
+            # Upload Setup EXE if exists
+            if (Test-Path '{setup_path}') {{
+                $uploadUrlExe = $rel.upload_url.Replace('{{?name,label}}', '?name=PersianFixer-{tag_name}-Setup.exe')
+                $bytesExe = [System.IO.File]::ReadAllBytes('{setup_path}')
+                $assetHeadersExe = @{{
+                    'Authorization' = 'token {token}'
+                    'User-Agent' = 'PowerShell'
+                    'Accept' = 'application/vnd.github.v3+json'
+                    'Content-Type' = 'application/octet-stream'
+                }}
+                Invoke-RestMethod -Uri $uploadUrlExe -Method Post -Headers $assetHeadersExe -Body $bytesExe | Out-Null
+            }}
             """
             subprocess.run(["powershell", "-NoProfile", "-Command", ps_script], cwd=SCRIPT_DIR, check=True)
-            print("  ✓ ریلیز رسمی در گیت‌هاب با موفقیت منتشر شد و فایل پیوست گردید!")
+            print("  ✓ ریلیز رسمی در گیت‌هاب با موفقیت منتشر شد و هر دو فایل نصبی و پرتابل پیوست گردیدند!")
         except Exception as e:
             print(f"  ⚠️ هشدار: ثبت API با خطا مواجه شد ({e})، اما به لطف GitHub Actions تگ ارسال شد و گیت‌هاب خودش ریلیز را می‌سازد.")
     else:

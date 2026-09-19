@@ -15,6 +15,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 import font_installer
 import patcher
+import autostart
 
 # --- COLOR PALETTE (Modern Ultra-Clean Dark Slate) ---
 BG_MAIN = "#0d1117"        # Deep slate background
@@ -81,6 +82,9 @@ class PersianFixerApp(tk.Tk):
         self.setup_ui()
         self.setup_tray()
         self.refresh_statuses()
+
+        if "--tray" in sys.argv or "--minimized" in sys.argv:
+            self.withdraw()
 
     def setup_ui(self):
         # 1. HEADER (Compact, Modern, Brand)
@@ -270,12 +274,31 @@ class PersianFixerApp(tk.Tk):
         self.log_text.tag_configure("rtl_warn", justify="right", foreground=STATUS_WARN_TEXT)
         self.log_text.tag_configure("rtl_err", justify="right", foreground=STATUS_ERR_TEXT)
 
-        # Footer note
+        # Bottom controls (Autostart toggle + Tray note)
+        bottom_frame = tk.Frame(self, bg=BG_MAIN)
+        bottom_frame.pack(side="bottom", fill="x", padx=16, pady=(0, 6))
+
+        self.autostart_var = tk.BooleanVar(value=autostart.is_autostart_enabled())
+        chk_autostart = tk.Checkbutton(
+            bottom_frame,
+            text="اجرای خودکار همراه با روشن شدن ویندوز (Startup)",
+            variable=self.autostart_var,
+            command=self.on_toggle_autostart_gui,
+            font=(FONT_NAME, 8),
+            bg=BG_MAIN,
+            fg=TEXT_MUTED,
+            selectcolor="#161b22",
+            activebackground=BG_MAIN,
+            activeforeground=TEXT_WHITE,
+            cursor="hand2"
+        )
+        chk_autostart.pack(side="right")
+
         footer = tk.Label(
-            self, text="هنگام بستن پنجره، برنامه برای دسترسی سریع به کنار ساعت ویندوز (System Tray) منتقل می‌شود.",
+            bottom_frame, text="• با بستن پنجره، برنامه در System Tray فعال می‌ماند",
             font=(FONT_NAME, 7), bg=BG_MAIN, fg=TEXT_DIM
         )
-        footer.pack(side="bottom", pady=(0, 6))
+        footer.pack(side="left")
 
         self.log("سیستم با موفقیت آماده به کار شد.", "rtl_info")
 
@@ -592,6 +615,8 @@ class PersianFixerApp(tk.Tk):
             menu = pystray.Menu(
                 item('نمایش پنجره PersianFixer', self.restore_from_tray, default=True),
                 pystray.Menu.SEPARATOR,
+                item('اجرا همراه با ویندوز', self.toggle_autostart_tray, checked=lambda item: autostart.is_autostart_enabled()),
+                pystray.Menu.SEPARATOR,
                 item('اجرای Antigravity', lambda: patcher.launch_antigravity()),
                 item('اجرای Claude', lambda: patcher.launch_claude()),
                 item('اجرای OpenCode', lambda: patcher.launch_opencode()),
@@ -605,6 +630,19 @@ class PersianFixerApp(tk.Tk):
             threading.Thread(target=self.tray_icon.run, daemon=True).start()
         except Exception as e:
             pass
+
+    def on_toggle_autostart_gui(self):
+        val = self.autostart_var.get()
+        ok, msg = autostart.set_autostart(val)
+        self.log(msg, "rtl_ok" if ok else "rtl_err")
+
+    def toggle_autostart_tray(self, icon=None, item=None):
+        current = autostart.is_autostart_enabled()
+        new_val = not current
+        ok, msg = autostart.set_autostart(new_val)
+        if hasattr(self, "autostart_var"):
+            self.autostart_var.set(new_val)
+        self.log(msg, "rtl_ok" if ok else "rtl_err")
 
     def minimize_to_tray(self):
         self.withdraw()

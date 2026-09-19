@@ -12,6 +12,7 @@ __pycache__/
 *.tmp
 *.log
 *.zip
+*.exe
 app.asar.patched
 app.asar.backup
 

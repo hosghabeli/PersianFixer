@@ -1,4 +1,16 @@
 Set WshShell = CreateObject("WScript.Shell")
-scriptDir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
+Set fso = CreateObject("Scripting.FileSystemObject")
+scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
 WshShell.CurrentDirectory = scriptDir
-WshShell.Run """C:\Python314\pythonw.exe"" """ & scriptDir & "\gui.py""", 0, False
+
+argsStr = ""
+For i = 0 To WScript.Arguments.Count - 1
+    argsStr = argsStr & " """ & WScript.Arguments(i) & """"
+Next
+
+pythonw = "pythonw.exe"
+If fso.FileExists("C:\Python314\pythonw.exe") Then
+    pythonw = "C:\Python314\pythonw.exe"
+End If
+
+WshShell.Run """" & pythonw & """ """ & scriptDir & "\gui.py""" & argsStr, 0, False

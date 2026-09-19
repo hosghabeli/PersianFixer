@@ -31,7 +31,7 @@ jobs:
           if (Test-Path $stage) { Remove-Item -Recurse -Force $stage }
           New-Item -ItemType Directory -Path $stage
 
-          Copy-Item "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py", "gui.py", "patcher.py", "font_installer.py", "persian_engine.js", "asar_patcher.js", "requirements.txt", "package.json", "icon.ico", "icon.png", "README.md", "LICENSE" -Destination $stage
+          Copy-Item "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py", "gui.py", "patcher.py", "font_installer.py", "autostart.py", "persian_engine.js", "asar_patcher.js", "requirements.txt", "package.json", "icon.ico", "icon.png", "README.md", "LICENSE" -Destination $stage
           Copy-Item -Recurse "fonts" -Destination $stage
           Copy-Item -Recurse "node_modules" -Destination $stage
 
@@ -40,8 +40,25 @@ jobs:
           Remove-Item -Recurse -Force $stage
           Write-Output "ZIP created: $zipName"
 
+      - name: Build Windows Installer (.exe)
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}".TrimStart("v")
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            $iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
+          }
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup -y
+            $iscc = "ISCC.exe"
+          }
+          & $iscc /DMyAppVersion="$ver" installer.iss
+          Write-Output "Installer created: PersianFixer-v$ver-Setup.exe"
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: PersianFixer-${{ github.ref_name }}-windows.zip
+          files: |
+            PersianFixer-${{ github.ref_name }}-windows.zip
+            PersianFixer-${{ github.ref_name }}-Setup.exe
           generate_release_notes: true
