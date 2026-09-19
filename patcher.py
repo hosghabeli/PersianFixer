@@ -102,28 +102,27 @@ def close_process(proc_name):
     except Exception:
         return False
 
-def create_desktop_shortcut(target_exe, shortcut_name, description):
+def ensure_start_menu_shortcut(target_exe, shortcut_name, description):
+    # Ensure no shortcut is placed on Desktop, and clean up any existing one
     desktop = os.path.join(os.environ.get("USERPROFILE", ""), "Desktop")
-    start_menu = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs")
-
     desktop_lnk = os.path.join(desktop, shortcut_name)
+    if os.path.exists(desktop_lnk):
+        try:
+            os.remove(desktop_lnk)
+        except Exception:
+            pass
+
+    start_menu = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs")
     start_lnk = os.path.join(start_menu, shortcut_name)
 
     ps_cmd = f"""
     $WshShell = New-Object -ComObject WScript.Shell
-    $Shortcut1 = $WshShell.CreateShortcut('{desktop_lnk}')
-    $Shortcut1.TargetPath = '{target_exe}'
-    $Shortcut1.WorkingDirectory = '{os.path.dirname(target_exe)}'
-    $Shortcut1.Description = '{description}'
-    $Shortcut1.IconLocation = '{target_exe},0'
-    $Shortcut1.Save()
-
-    $Shortcut2 = $WshShell.CreateShortcut('{start_lnk}')
-    $Shortcut2.TargetPath = '{target_exe}'
-    $Shortcut2.WorkingDirectory = '{os.path.dirname(target_exe)}'
-    $Shortcut2.Description = '{description}'
-    $Shortcut2.IconLocation = '{target_exe},0'
-    $Shortcut2.Save()
+    $Shortcut = $WshShell.CreateShortcut('{start_lnk}')
+    $Shortcut.TargetPath = '{target_exe}'
+    $Shortcut.WorkingDirectory = '{os.path.dirname(target_exe)}'
+    $Shortcut.Description = '{description}'
+    $Shortcut.IconLocation = '{target_exe},0'
+    $Shortcut.Save()
     """
     subprocess.run(
         ["powershell", "-NoProfile", "-Command", ps_cmd],
@@ -265,12 +264,12 @@ def patch_claude(auto_close=False):
             creationflags=subprocess.CREATE_NO_WINDOW
         )
         if proc.returncode == 0 and "SUCCESS" in proc.stdout:
-            create_desktop_shortcut(
+            ensure_start_menu_shortcut(
                 CLAUDE_TARGET_EXE,
                 "Claude.lnk",
                 "اجرای Claude Desktop با فونت وزیرمتن و راست‌چین فارسی"
             )
-            return True, "برنامه Claude با موفقیت پچ و آیکون آن متصل شد."
+            return True, "برنامه Claude با موفقیت پچ شد."
         return False, f"خطا در پچ Claude: {proc.stderr or proc.stdout}"
     except Exception as e:
         return False, f"خطای سیستمی: {e}"
@@ -424,12 +423,12 @@ def patch_chatgpt(auto_close=False):
             creationflags=subprocess.CREATE_NO_WINDOW
         )
         if proc.returncode == 0 and "SUCCESS" in proc.stdout:
-            create_desktop_shortcut(
+            ensure_start_menu_shortcut(
                 CHATGPT_TARGET_EXE,
                 "ChatGPT.lnk",
                 "اجرای ChatGPT (Codex) با فونت وزیرمتن و راست‌چین فارسی"
             )
-            return True, "برنامه ChatGPT با موفقیت پچ و آیکون آن متصل شد."
+            return True, "برنامه ChatGPT با موفقیت پچ شد."
         return False, f"خطا در پچ ChatGPT: {proc.stderr or proc.stdout}"
     except Exception as e:
         return False, f"خطای سیستمی: {e}"
