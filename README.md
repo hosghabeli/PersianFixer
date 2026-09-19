@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.6.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.7.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
