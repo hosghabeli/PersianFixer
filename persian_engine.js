@@ -60,12 +60,25 @@ li[dir="rtl"], li.persian-text {
 pre, code, kbd, samp, pre *, code *,
 .monaco-editor, .monaco-editor *,
 .code-block, [data-code-block],
-.font-mono, [class*="mono"],
-table, th, td {
+.font-mono, [class*="mono"] {
   direction: ltr !important;
   text-align: left !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
   unicode-bidi: isolate !important;
+}
+
+/* Persian & RTL Tables */
+table[dir="rtl"], table.persian-table, [dir="rtl"] table {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+table[dir="rtl"] th, table[dir="rtl"] td,
+th[dir="rtl"], td[dir="rtl"],
+th.persian-text, td.persian-text {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* Inline Code inside Persian sentences */
@@ -145,9 +158,9 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                 return;
             }
 
-            // Text elements (Block-level only: p, li, h1..h6, blockquote, div)
+            // Text elements (Block-level and tables: p, li, h1..h6, blockquote, div, th, td, table)
             // Never apply dir=rtl to inline elements (span, a) as it breaks natural BiDi flow of English words
-            if (/^(p|li|h1|h2|h3|h4|h5|h6|blockquote|div)$/i.test(tag)) {
+            if (/^(p|li|h1|h2|h3|h4|h5|h6|blockquote|div|th|td|table)$/i.test(tag)) {
                 let containsPersian = false;
 
                 // Check text nodes
@@ -161,8 +174,8 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                     }
                 }
 
-                // If tag is p, li, h1..h6, blockquote, check full text if not found in direct children
-                if (!containsPersian && /^(p|li|h1|h2|h3|h4|h5|h6|blockquote)$/i.test(tag)) {
+                // If tag is p, li, h1..h6, blockquote, th, td, table, check full text if not found in direct children
+                if (!containsPersian && /^(p|li|h1|h2|h3|h4|h5|h6|blockquote|th|td|table)$/i.test(tag)) {
                     const text = el.innerText || el.textContent || '';
                     if (text && PERSIAN_REGEX.test(text)) {
                         containsPersian = true;
@@ -172,7 +185,7 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                 if (containsPersian) {
                     if (el.getAttribute('dir') !== 'rtl') {
                         el.setAttribute('dir', 'rtl');
-                        el.classList.add('persian-text');
+                        el.classList.add(tag === 'table' ? 'persian-table' : 'persian-text');
                         el.style.direction = 'rtl';
                         el.style.textAlign = 'right';
                         el.style.fontFamily = "'Vazirmatn', sans-serif";
@@ -183,6 +196,17 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                             el.parentElement.classList.add('persian-list');
                             el.parentElement.style.direction = 'rtl';
                             el.parentElement.style.textAlign = 'right';
+                        }
+
+                        // If th or td, also set enclosing table to rtl so columns order RTL
+                        if (tag === 'th' || tag === 'td') {
+                            const tbl = el.closest ? el.closest('table') : null;
+                            if (tbl && tbl.getAttribute('dir') !== 'rtl') {
+                                tbl.setAttribute('dir', 'rtl');
+                                tbl.classList.add('persian-table');
+                                tbl.style.direction = 'rtl';
+                                tbl.style.textAlign = 'right';
+                            }
                         }
                     }
                 }
@@ -195,7 +219,7 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
     function scanAll() {
         try {
             injectStyle(document);
-            const allElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote, div, textarea, input, [contenteditable="true"]');
+            const allElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote, div, th, td, table, textarea, input, [contenteditable="true"]');
             for (let i = 0; i < allElements.length; i++) {
                 processSingleElement(allElements[i]);
             }
