@@ -13,6 +13,14 @@ from pystray import MenuItem as item
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
+import ctypes
+try:
+    # Set explicit AppUserModelID so Windows Taskbar displays the app's custom icon
+    myappid = 'hosgh.persianfixer.gui.v3'
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except Exception:
+    pass
+
 import font_installer
 import patcher
 import autostart
@@ -72,7 +80,17 @@ class PersianFixerApp(tk.Tk):
 
         if os.path.exists(ICON_ICO):
             try:
-                self.iconbitmap(ICON_ICO)
+                self.iconbitmap(default=ICON_ICO)
+            except Exception:
+                try:
+                    self.iconbitmap(ICON_ICO)
+                except Exception:
+                    pass
+
+        if os.path.exists(ICON_PNG):
+            try:
+                self._taskbar_icon = tk.PhotoImage(file=ICON_PNG)
+                self.iconphoto(True, self._taskbar_icon)
             except Exception:
                 pass
 
