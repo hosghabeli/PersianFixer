@@ -1,5 +1,6 @@
 import os
 import sys
+import socket
 import threading
 import time
 from datetime import datetime
@@ -673,12 +674,53 @@ class PersianFixerApp(tk.Tk):
         self.lift()
         self.focus_force()
 
+    def start_instance_listener(self, server_socket):
+        def listener():
+            while True:
+                try:
+                    conn, _ = server_socket.accept()
+                    data = conn.recv(64)
+                    if b"SHOW" in data:
+                        self.after(0, self.restore_from_tray)
+                    conn.close()
+                except Exception:
+                    break
+        threading.Thread(target=listener, daemon=True).start()
+
     def quit_app(self, icon=None, item=None):
         if self.tray_icon:
             self.tray_icon.stop()
         self.after(0, self.destroy)
         os._exit(0)
 
+SINGLE_INSTANCE_PORT = 49281
+
+def check_or_notify_single_instance():
+    """
+    Guarantees only 1 instance of PersianFixer runs at any time.
+    If another instance is already running, sends 'SHOW' signal so it pops up,
+    and terminates this new process cleanly.
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        s.bind(("127.0.0.1", SINGLE_INSTANCE_PORT))
+        s.listen(5)
+        return s
+    except Exception:
+        # Another instance is already running
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.settimeout(1.0)
+            client.connect(("127.0.0.1", SINGLE_INSTANCE_PORT))
+            client.sendall(b"SHOW")
+            client.close()
+        except Exception:
+            pass
+        sys.exit(0)
+
 if __name__ == "__main__":
+    server_sock = check_or_notify_single_instance()
     app = PersianFixerApp()
+    app.start_instance_listener(server_sock)
     app.mainloop()
