@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.8.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.9.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -75,7 +75,12 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.8.0 (جدید - New)
+### Version 3.9.0 (جدید - New)
+- 🔒 **قفل تک‌نمونه‌ای هوشمند (Single-Instance Lock)**: جلوگیری کامل از اجرای موازی برنامه و بازگردانی پنجره قبلی به روی صفحه هنگام کلیک مجدد روی آیکون برنامه (رفع مشکل چند آیکون شدن در System Tray).
+- 🏷️ **ثبت رسمی متادیتای نسخه در فایل ستاپ**: درج نسخه `3.9.0.0` و مشخصات در Properties و Tooltip ویندوز به جای `0.0.0.0`.
+- 🎨 **اصلاح نمایش آیکون در تسک‌بار**: ثبت شناسه اختصاصی `AppUserModelID` و نمایش مستقیم آیکون برنامه.
+
+### Version 3.8.0
 - ⚡ **پچ سریع و بدون استخراج Antigravity**: بهینه‌سازی کامل موتور ASAR Patcher با روش Binary Offset جهت اعمال آنی پچ بدون خطای قفل فایل‌ها و پکیج‌های اکسترکت‌نشده.
 - 🎯 **حل ریشه‌ای مشکل معکوس شدن عبارات انگلیسی و شماره‌ها (BiDi)**: اعمال جهت `dir="rtl"` فقط روی سطوح بلاک (پاراگراف‌ها و لیست‌ها) و جلوگیری از وارونه شدن شماره‌ها (1. 2. 3.) و کلمات انگلیسی.
 - 🛠️ **بهبود قطع پردازه‌ها**: افزودن پارامتر `/T` برای بستن تمامی زیرپروسه‌های Electron و باز شدن قفل فایل‌ها پیش از جایگزینی.

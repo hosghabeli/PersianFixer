@@ -4,7 +4,7 @@
 ; =====================================================================
 
 #ifndef MyAppVersion
-#define MyAppVersion "3.8.0"
+#define MyAppVersion "3.9.0"
 #endif
 
 #define MyAppName "PersianFixer"
@@ -33,6 +33,13 @@ SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\icon.ico
 ArchitecturesInstallIn64BitMode=x64compatible
+VersionInfoVersion={#MyAppVersion}.0
+VersionInfoTextVersion={#MyAppVersion}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription={#MyAppName} Setup
+VersionInfoCopyright=Copyright (C) 2026 {#MyAppPublisher}
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

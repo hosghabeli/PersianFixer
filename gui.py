@@ -134,7 +134,7 @@ class PersianFixerApp(tk.Tk):
         t_row.pack(anchor="e", pady=(8, 0))
 
         v_badge = tk.Label(
-            t_row, text="v3.8", font=(FONT_NAME, 8, "bold"),
+            t_row, text="v3.9", font=(FONT_NAME, 8, "bold"),
             bg="#21262d", fg=ACCENT_CYAN, padx=5, pady=1
         )
         v_badge.pack(side="left", padx=(0, 6))
