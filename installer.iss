@@ -4,7 +4,7 @@
 ; =====================================================================
 
 #ifndef MyAppVersion
-#define MyAppVersion "3.7.0"
+#define MyAppVersion "3.8.0"
 #endif
 
 #define MyAppName "PersianFixer"
@@ -47,6 +47,7 @@ Source: "font_installer.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "autostart.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "persian_engine.js"; DestDir: "{app}"; Flags: ignoreversion
 Source: "asar_patcher.js"; DestDir: "{app}"; Flags: ignoreversion
+Source: "apply_antigravity_patch.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "PersianFixer.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "package.json"; DestDir: "{app}"; Flags: ignoreversion

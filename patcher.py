@@ -91,13 +91,13 @@ def is_process_running(proc_name):
 def close_process(proc_name):
     try:
         subprocess.run(
-            ["taskkill", "/F", "/IM", proc_name],
+            ["taskkill", "/F", "/T", "/IM", proc_name],
             check=False,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             creationflags=subprocess.CREATE_NO_WINDOW
         )
-        time.sleep(1.0)
+        time.sleep(1.5)
         return True
     except Exception:
         return False

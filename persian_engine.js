@@ -145,8 +145,9 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                 return;
             }
 
-            // Text elements (p, li, h1..h6, div, span, blockquote)
-            if (/^(p|li|h1|h2|h3|h4|h5|h6|div|span|blockquote|a)$/i.test(tag)) {
+            // Text elements (Block-level only: p, li, h1..h6, blockquote, div)
+            // Never apply dir=rtl to inline elements (span, a) as it breaks natural BiDi flow of English words
+            if (/^(p|li|h1|h2|h3|h4|h5|h6|blockquote|div)$/i.test(tag)) {
                 let containsPersian = false;
 
                 // Check text nodes
@@ -194,7 +195,7 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
     function scanAll() {
         try {
             injectStyle(document);
-            const allElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote, div, span, textarea, input, [contenteditable="true"]');
+            const allElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote, div, textarea, input, [contenteditable="true"]');
             for (let i = 0; i < allElements.length; i++) {
                 processSingleElement(allElements[i]);
             }

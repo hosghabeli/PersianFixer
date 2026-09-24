@@ -168,16 +168,11 @@ if (require.main === module) {
             const engineCode = fs.readFileSync(enginePath, 'utf8');
 
             try {
-                if (targetFile === 'dist/preload.js') {
-                    // Antigravity
-                    await patchAntigravityAsar(srcAsar, destAsar, engineCode);
-                } else {
-                    // Claude or other padded asar
-                    patchAsarExactOffset(srcAsar, destAsar, targetFile.split('/'), (content) => {
-                        if (content.includes('PersianFixer')) return content;
-                        return content + '\n;\n' + engineCode + '\n';
-                    });
-                }
+                // Use fast, in-place binary exact offset patcher for all targets (Antigravity dist/preload.js, Claude, OpenCode, etc.)
+                patchAsarExactOffset(srcAsar, destAsar, targetFile.split('/'), (content) => {
+                    if (content.includes('PersianFixer')) return content;
+                    return content + '\n;\n// --- PERSIAN FIXER ENGINE INJECTION ---\n' + engineCode + '\n';
+                });
 
                 if (exeToFuse && fs.existsSync(exeToFuse)) {
                     await disableIntegrityFuse(exeToFuse);

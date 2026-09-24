@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.7.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.8.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -75,7 +75,16 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.6.0 (جدید - New)
+### Version 3.8.0 (جدید - New)
+- ⚡ **پچ سریع و بدون استخراج Antigravity**: بهینه‌سازی کامل موتور ASAR Patcher با روش Binary Offset جهت اعمال آنی پچ بدون خطای قفل فایل‌ها و پکیج‌های اکسترکت‌نشده.
+- 🎯 **حل ریشه‌ای مشکل معکوس شدن عبارات انگلیسی و شماره‌ها (BiDi)**: اعمال جهت `dir="rtl"` فقط روی سطوح بلاک (پاراگراف‌ها و لیست‌ها) و جلوگیری از وارونه شدن شماره‌ها (1. 2. 3.) و کلمات انگلیسی.
+- 🛠️ **بهبود قطع پردازه‌ها**: افزودن پارامتر `/T` برای بستن تمامی زیرپروسه‌های Electron و باز شدن قفل فایل‌ها پیش از جایگزینی.
+- 📦 **فایل کمکی `apply_antigravity_patch.bat`**: ابزار ۱-کلیک مستقل برای پچ و ریستارت فوری Antigravity.
+
+### Version 3.7.0
+- 📦 **نصاب رسمی Inno Setup**: ساخت فایل Setup.exe با ساختار استاندارد ویندوز و ثبت در Start Menu بدون شلوغ کردن دسکتاپ.
+
+### Version 3.6.0
 - 🎨 **بازطراحی مینیمال و کامپکت**: حذف اسکرول‌بار و یکپارچه‌سازی تمام بخش‌ها در یک پنجره ثابت و متمرکز در مانیتور.
 - ⚙️ **سیستم اتوماسیون انتشار ریلیز (CI/CD)**: افزودن گردش کار خودکار GitHub Actions و اسکریپت محلی `make_release.bat`.
 - 🔠 **رفع مشکل جابجایی کلمات در لاگ**: اعمال کاراکتر استاندارد RLM برای نظم کامل متون فارسی و انگلیسی.
