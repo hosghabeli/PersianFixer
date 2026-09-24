@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.9.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.10.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -75,7 +75,12 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.9.0 (جدید - New)
+### Version 3.10.0 (جدید - New)
+- 📊 **پشتیبانی کامل از جداول مارک‌داون (RTL Tables)**: تشخیص هوشمند متن فارسی در جداول و معکوس‌سازی ترتیب ستون‌ها به راست‌چین (`dir="rtl"`) تا ستون اول در سمت راست قرار گیرد.
+- 🔤 **فونت رسمی وزیرمتن در سلول‌های جدول**: حذف استایل اشتباه مونو اسپیس از جداول و رندر روان حروف فارسی بدون فاصله غیرعادی.
+- 🔒 **ایزوله‌سازی کدهای درون‌جدولی**: تگ‌های فنی و اسامی متغیرها داخل سلول‌های جدول کماکان به صورت چپ‌چین و مونو باقی می‌مانند.
+
+### Version 3.9.0
 - 🔒 **قفل تک‌نمونه‌ای هوشمند (Single-Instance Lock)**: جلوگیری کامل از اجرای موازی برنامه و بازگردانی پنجره قبلی به روی صفحه هنگام کلیک مجدد روی آیکون برنامه (رفع مشکل چند آیکون شدن در System Tray).
 - 🏷️ **ثبت رسمی متادیتای نسخه در فایل ستاپ**: درج نسخه `3.9.0.0` و مشخصات در Properties و Tooltip ویندوز به جای `0.0.0.0`.
 - 🎨 **اصلاح نمایش آیکون در تسک‌بار**: ثبت شناسه اختصاصی `AppUserModelID` و نمایش مستقیم آیکون برنامه.

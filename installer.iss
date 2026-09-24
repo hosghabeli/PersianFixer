@@ -4,7 +4,7 @@
 ; =====================================================================
 
 #ifndef MyAppVersion
-#define MyAppVersion "3.9.0"
+#define MyAppVersion "3.10.0"
 #endif
 
 #define MyAppName "PersianFixer"
