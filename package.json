@@ -1,0 +1,32 @@
+{
+  "name": "persianfixer",
+  "version": "3.10.0",
+  "description": "Smart RTL and Google Vazirmatn font engine for Antigravity, Claude Desktop, OpenCode, and ChatGPT (Codex) on Windows",
+  "main": "persian_engine.js",
+  "scripts": {
+    "patch": "node asar_patcher.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hosghabeli/PersianFixer.git"
+  },
+  "keywords": [
+    "antigravity",
+    "claude",
+    "opencode",
+    "chatgpt",
+    "codex",
+    "persian",
+    "rtl",
+    "vazirmatn",
+    "electron",
+    "farsi"
+  ],
+  "author": "Hossein Ghabeli",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@electron/asar": "^4.3.0",
+    "@electron/fuses": "^2.1.3"
+  }
+}
