@@ -221,7 +221,7 @@ def main():
                 prerelease = $false
             }} | ConvertTo-Json -Compress
 
-            $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/hosgh/PersianFixer/releases' -Method Post -Headers $headers -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json; charset=utf-8'
+            $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/hosghabeli/PersianFixer/releases' -Method Post -Headers $headers -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json; charset=utf-8'
             
             # Upload ZIP
             $uploadUrlZip = $rel.upload_url.Replace('{{?name,label}}', '?name=PersianFixer-{tag_name}-windows.zip')
@@ -256,7 +256,7 @@ def main():
 
     print("\n" + "=" * 60)
     print(f"🎉 انتشار نسخه {tag_name} با موفقیت کامل انجام شد!")
-    print(f"🔗 آدرس انتشارهای گیت‌هاب: https://github.com/hosgh/PersianFixer/releases")
+    print(f"🔗 آدرس انتشارهای گیت‌هاب: https://github.com/hosghabeli/PersianFixer/releases")
     print("=" * 60)
     input("\nبرای پایان Enter را بزنید...")
 

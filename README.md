@@ -6,8 +6,8 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.10.0-blue.svg)](https://github.com/hosgh/PersianFixer/releases)
-  [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosgh/PersianFixer)
+  [![Version](https://img.shields.io/badge/version-v3.10.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
+  [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosghabeli/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
 </div>
@@ -48,11 +48,10 @@
 ## 📥 دانلود و استفاده سریع | Quick Start
 
 ### روش ۱: دانلود بسته آماده (پیشنهادی)
-به بخش [Releases](https://github.com/hosgh/PersianFixer/releases) مراجعه کرده و آخرین نسخه فشرده را دانلود کنید:
-1. فایل زیپ `PersianFixer-v3.6.0-windows.zip` را اکسترکت کنید.
-2. روی فایل **`PersianFixer.vbs`** دابل‌کلیک کنید تا برنامه باز شود.
-3. روی دکمه بزرگ **«اعمال هوشمند پچ و فونت برای تمام برنامه‌ها»** کلیک کنید!
-4. نرم‌افزارهای خود را اجرا کنید و از محیط زیبا و روان فارسی لذت ببرید.
+به بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) مراجعه کرده و آخرین نسخه فشرده یا فایل نصبی را دانلود کنید:
+1. فایل نصاب `PersianFixer-v3.10.0-Setup.exe` را اجرا و نصب کنید.
+2. روی دکمه بزرگ **«فعال‌سازی هوشمند تمام ابزارها»** کلیک کنید!
+3. نرم‌افزارهای خود را اجرا کنید و از محیط زیبا و روان فارسی لذت ببرید.
 
 ### روش ۲: اجرا از سورس کد (برای توسعه‌دهندگان)
 پیش‌نیازها:
@@ -61,7 +60,7 @@
 
 ```powershell
 # ۱. کلون کردن مخزن
-git clone https://github.com/hosgh/PersianFixer.git
+git clone https://github.com/hosghabeli/PersianFixer.git
 cd PersianFixer
 
 # ۲. نصب نیازمندی‌های پایتون

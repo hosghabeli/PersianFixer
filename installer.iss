@@ -9,7 +9,7 @@
 
 #define MyAppName "PersianFixer"
 #define MyAppPublisher "Hossein Gholami"
-#define MyAppURL "https://github.com/hosgh/PersianFixer"
+#define MyAppURL "https://github.com/hosghabeli/PersianFixer"
 #define MyAppExeName "PersianFixer.vbs"
 
 [Setup]
