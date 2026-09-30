@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PersianFixer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <img src="../icons/icon48.png" alt="PersianFixer" class="logo">
+        <div>
+          <h1 class="title">PersianFixer</h1>
+          <span class="version">نسخه ۱.۰.۰</span>
+        </div>
+      </div>
+      <label class="switch" title="فعال یا غیرفعال کردن کلی">
+        <input type="checkbox" id="global-toggle" checked>
+        <span class="slider round"></span>
+      </label>
+    </header>
+
+    <!-- Current Site Card -->
+    <div class="card site-card" id="site-card">
+      <div class="site-info">
+        <div class="site-icon-wrapper">
+          <span class="globe-icon">🌐</span>
+        </div>
+        <div class="site-details">
+          <span class="site-label">سایت فعلی:</span>
+          <span class="site-domain" id="site-domain">...</span>
+        </div>
+      </div>
+      <button class="site-toggle-btn" id="site-toggle-btn">
+        غیرفعال در این سایت
+      </button>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="card">
+      <label class="card-title">حالت اجرا روی وب‌سایت‌ها:</label>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="mode" value="all" id="mode-all" checked>
+          <span class="radio-custom"></span>
+          <span class="radio-label">تمامی وب‌سایت‌ها</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="mode" value="ai_only" id="mode-ai">
+          <span class="radio-custom"></span>
+          <span class="radio-label">فقط چت‌بات‌های AI (ChatGPT, Claude, Gemini, DeepSeek...)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Settings & Features -->
+    <div class="card">
+      <label class="card-title">تنظیمات و ابزارها:</label>
+      
+      <div class="setting-row">
+        <span>اعمال فونت وزیرمتن (Vazirmatn)</span>
+        <label class="mini-switch">
+          <input type="checkbox" id="opt-font" checked>
+          <span class="mini-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <span>راست‌چین‌سازی هوشمند جداول مارک‌داون</span>
+        <label class="mini-switch">
+          <input type="checkbox" id="opt-tables" checked>
+          <span class="mini-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row slider-row">
+        <div class="slider-label-row">
+          <span>اندازه متن فارسی:</span>
+          <span id="font-scale-value">۱۰۰٪</span>
+        </div>
+        <input type="range" id="font-scale" min="-10" max="30" step="5" value="0">
+      </div>
+    </div>
+
+    <!-- Footer / Short info -->
+    <footer class="footer">
+      <div class="shortcut-tip">
+        <span>کلید میانبر سریع:</span>
+        <kbd>Alt + Shift + P</kbd>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/hosghabeli/PersianFixer" target="_blank" rel="noopener">گیت‌هاب پروژه</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
