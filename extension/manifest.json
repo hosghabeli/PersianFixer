@@ -44,7 +44,7 @@
     "*://groq.com/*",
     "*://*.groq.com/*",
     "*://v0.dev/*",
-    "*://huggingface.co/chat/*"
+    "*://*.huggingface.co/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -70,7 +70,7 @@
         "*://groq.com/*",
         "*://*.groq.com/*",
         "*://v0.dev/*",
-        "*://huggingface.co/chat/*"
+        "*://*.huggingface.co/*"
       ],
       "js": [
         "content.js"
@@ -86,25 +86,7 @@
         "icons/*.png"
       ],
       "matches": [
-        "*://chatgpt.com/*",
-        "*://*.chatgpt.com/*",
-        "*://chat.openai.com/*",
-        "*://claude.ai/*",
-        "*://*.claude.ai/*",
-        "*://gemini.google.com/*",
-        "*://aistudio.google.com/*",
-        "*://chat.deepseek.com/*",
-        "*://*.deepseek.com/*",
-        "*://perplexity.ai/*",
-        "*://*.perplexity.ai/*",
-        "*://poe.com/*",
-        "*://*.poe.com/*",
-        "*://copilot.microsoft.com/*",
-        "*://chat.mistral.ai/*",
-        "*://groq.com/*",
-        "*://*.groq.com/*",
-        "*://v0.dev/*",
-        "*://huggingface.co/chat/*"
+        "<all_urls>"
       ]
     }
   ],
