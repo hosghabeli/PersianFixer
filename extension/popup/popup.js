@@ -32,27 +32,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     siteToggleBtn.style.display = 'none';
   }
 
+  const AI_DOMAINS = [
+    'chatgpt.com',
+    'openai.com',
+    'claude.ai',
+    'gemini.google.com',
+    'aistudio.google.com',
+    'deepseek.com',
+    'perplexity.ai',
+    'poe.com',
+    'copilot.microsoft.com',
+    'mistral.ai',
+    'groq.com',
+    'v0.dev',
+    'huggingface.co'
+  ];
+
   // 2. Load stored settings
   chrome.storage.sync.get({
     enabled: true,
-    mode: 'all',
+    mode: 'ai_only',
     blacklist: [],
     forceVazirFont: true,
     smartTables: true,
     fontSizeDelta: 0
   }, (settings) => {
     globalToggle.checked = settings.enabled;
-    if (settings.mode === 'ai_only') {
-      modeAi.checked = true;
-    } else {
+    const mode = settings.mode || 'ai_only';
+    if (mode === 'all') {
       modeAll.checked = true;
+    } else {
+      modeAi.checked = true;
     }
     optFont.checked = settings.forceVazirFont;
     optTables.checked = settings.smartTables;
     fontScale.value = settings.fontSizeDelta || 0;
     updateFontScaleText(fontScale.value);
 
-    updateSiteButtonState(settings.blacklist || []);
+    updateSiteButtonState(settings.blacklist || [], mode);
   });
 
   function updateFontScaleText(val) {
@@ -60,9 +77,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     fontScaleValue.textContent = `${percent}٪`;
   }
 
-  function updateSiteButtonState(blacklist) {
+  function updateSiteButtonState(blacklist, currentMode) {
     if (!currentHostname) return;
+    const isAi = AI_DOMAINS.some(d => currentHostname.includes(d));
+    const mode = currentMode || (modeAll.checked ? 'all' : 'ai_only');
     const isBlacklisted = blacklist.includes(currentHostname);
+
+    if (mode === 'ai_only' && !isAi) {
+      siteToggleBtn.textContent = 'غیرفعال (مخصوص چت‌بات‌های AI)';
+      siteToggleBtn.classList.add('disabled-state');
+      siteToggleBtn.disabled = true;
+      siteToggleBtn.style.opacity = '0.6';
+      return;
+    }
+
+    siteToggleBtn.disabled = false;
+    siteToggleBtn.style.opacity = '1';
     if (isBlacklisted) {
       siteToggleBtn.textContent = 'فعال کردن در این سایت';
       siteToggleBtn.classList.add('disabled-state');
@@ -90,11 +120,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   modeAll.addEventListener('change', () => {
-    if (modeAll.checked) saveSettings({ mode: 'all' });
+    if (modeAll.checked) {
+      saveSettings({ mode: 'all' });
+      chrome.storage.sync.get({ blacklist: [] }, (res) => updateSiteButtonState(res.blacklist, 'all'));
+    }
   });
 
   modeAi.addEventListener('change', () => {
-    if (modeAi.checked) saveSettings({ mode: 'ai_only' });
+    if (modeAi.checked) {
+      saveSettings({ mode: 'ai_only' });
+      chrome.storage.sync.get({ blacklist: [] }, (res) => updateSiteButtonState(res.blacklist, 'ai_only'));
+    }
   });
 
   optFont.addEventListener('change', () => {

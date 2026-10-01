@@ -257,20 +257,42 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
 
     let currentSettings = {};
 
+    const KNOWN_AI_DOMAINS = [
+        'chatgpt.com',
+        'openai.com',
+        'claude.ai',
+        'gemini.google.com',
+        'aistudio.google.com',
+        'deepseek.com',
+        'perplexity.ai',
+        'poe.com',
+        'copilot.microsoft.com',
+        'mistral.ai',
+        'groq.com',
+        'v0.dev',
+        'huggingface.co'
+    ];
+
     function shouldRun(settings) {
-        if (!settings.enabled) return false;
+        if (!settings || settings.enabled === false) return false;
 
         const hostname = window.location.hostname.toLowerCase();
         
+        // Safety guard: Never touch Gmail, Docs, YouTube or internal search
+        if (hostname.includes('mail.google.com') || hostname.includes('youtube.com') || hostname.includes('docs.google.com')) {
+            return false;
+        }
+
         // Check blacklist
         const blacklist = settings.blacklist || [];
         if (blacklist.some(b => hostname === b.toLowerCase() || hostname.endsWith('.' + b.toLowerCase()))) {
             return false;
         }
 
-        // Mode check
-        if (settings.mode === 'ai_only') {
-            const aiDomains = settings.aiDomains || [];
+        // Default mode is strictly ai_only
+        const mode = settings.mode || 'ai_only';
+        if (mode === 'ai_only') {
+            const aiDomains = (settings.aiDomains && settings.aiDomains.length > 0) ? settings.aiDomains : KNOWN_AI_DOMAINS;
             return aiDomains.some(d => hostname.includes(d.toLowerCase()));
         }
 

@@ -2,19 +2,22 @@
 
 const DEFAULT_SETTINGS = {
   enabled: true,
-  mode: 'all', // 'all', 'ai_only', 'blacklist'
+  mode: 'ai_only', // strictly only AI chat platforms
   aiDomains: [
     'chatgpt.com',
+    'chat.openai.com',
     'claude.ai',
     'gemini.google.com',
+    'aistudio.google.com',
     'chat.deepseek.com',
+    'deepseek.com',
     'perplexity.ai',
     'poe.com',
-    'github.com',
-    'huggingface.co',
-    'v0.dev',
     'copilot.microsoft.com',
-    'chat.mistral.ai'
+    'chat.mistral.ai',
+    'groq.com',
+    'v0.dev',
+    'huggingface.co'
   ],
   blacklist: [],
   forceVazirFont: true,
@@ -22,10 +25,12 @@ const DEFAULT_SETTINGS = {
   fontSizeDelta: 0
 };
 
-// Initialize settings on install
+// Initialize settings on install or update
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
-    chrome.storage.sync.set({ ...DEFAULT_SETTINGS, ...stored });
+    // Ensure mode defaults to ai_only
+    const mode = (stored && stored.mode === 'ai_only') ? 'ai_only' : 'ai_only';
+    chrome.storage.sync.set({ ...DEFAULT_SETTINGS, ...stored, mode });
   });
 
   // Context Menu for quick RTL toggle on selected element
