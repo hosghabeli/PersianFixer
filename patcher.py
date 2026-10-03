@@ -3,6 +3,9 @@ import sys
 import shutil
 import subprocess
 import time
+import json
+import hashlib
+import base64
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ENGINE_JS_PATH = os.path.join(SCRIPT_DIR, "persian_engine.js")
@@ -453,3 +456,201 @@ def launch_chatgpt():
         subprocess.Popen([CHATGPT_TARGET_EXE], cwd=CHATGPT_TARGET_DIR)
         return True, "برنامه ChatGPT اجرا شد."
     return False, "برنامه ChatGPT یافت نشد."
+
+
+# --- 5. VS CODE (MICROSOFT VISUAL STUDIO CODE) PATHS & LOGIC ---
+def find_vscode_targets():
+    """Returns list of (base_exe, app_dir) for installed VS Code instances."""
+    targets = []
+    candidates = [
+        (os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Microsoft VS Code", "Code.exe"),
+         os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Microsoft VS Code")),
+        (r"C:\Program Files\Microsoft VS Code\Code.exe",
+         r"C:\Program Files\Microsoft VS Code"),
+        (r"C:\Program Files (x86)\Microsoft VS Code\Code.exe",
+         r"C:\Program Files (x86)\Microsoft VS Code")
+    ]
+    for exe, base in candidates:
+        if os.path.exists(exe) and os.path.exists(base):
+            found_sub = False
+            try:
+                for item in os.listdir(base):
+                    sub = os.path.join(base, item)
+                    if os.path.isdir(sub):
+                        app_path = os.path.join(sub, "resources", "app")
+                        wb_js = os.path.join(app_path, "out", "vs", "workbench", "workbench.desktop.main.js")
+                        if os.path.exists(wb_js):
+                            targets.append((exe, app_path))
+                            found_sub = True
+            except Exception:
+                pass
+            direct_app = os.path.join(base, "resources", "app")
+            wb_js = os.path.join(direct_app, "out", "vs", "workbench", "workbench.desktop.main.js")
+            if not found_sub and os.path.exists(wb_js):
+                targets.append((exe, direct_app))
+    return targets
+
+
+def get_vscode_status():
+    targets = find_vscode_targets()
+    if not targets:
+        return {"installed": False, "patched": False, "backup": False, "running": False}
+
+    running = is_process_running("Code.exe")
+    primary_exe, primary_app = targets[0]
+    wb_js = os.path.join(primary_app, "out", "vs", "workbench", "workbench.desktop.main.js")
+    wb_bak = wb_js + ".bak"
+    has_backup = os.path.exists(wb_bak)
+    
+    patched = False
+    try:
+        if os.path.exists(wb_js):
+            with open(wb_js, "r", encoding="utf-8", errors="ignore") as f:
+                tail = f.read()[-30000:]
+            patched = "PERSIAN_FIXER_VSCODE_START" in tail
+    except Exception:
+        pass
+
+    return {
+        "installed": True,
+        "patched": patched,
+        "backup": has_backup,
+        "running": running
+    }
+
+
+def update_vscode_checksum(product_json_path, rel_key, file_abs_path):
+    try:
+        if not os.path.exists(product_json_path) or not os.path.exists(file_abs_path):
+            return
+        with open(file_abs_path, "rb") as f:
+            h = hashlib.sha256(f.read()).digest()
+            new_hash = base64.b64encode(h).decode("utf-8").rstrip("=")
+        with open(product_json_path, "r", encoding="utf-8") as f:
+            p_data = json.load(f)
+        if "checksums" in p_data and rel_key in p_data["checksums"]:
+            p_data["checksums"][rel_key] = new_hash
+            with open(product_json_path, "w", encoding="utf-8") as f:
+                json.dump(p_data, f, indent=2)
+    except Exception:
+        pass
+
+
+def patch_vscode(auto_close=False):
+    targets = find_vscode_targets()
+    if not targets:
+        return False, "نرم‌افزار Microsoft VS Code در ویندوز یافت نشد."
+
+    if is_process_running("Code.exe"):
+        if auto_close:
+            close_process("Code.exe")
+        else:
+            return False, "نرم‌افزار VS Code باز است. لطفاً آن را ببندید."
+
+    if not os.path.exists(ENGINE_JS_PATH):
+        return False, "فایل موتور فارسی (persian_engine.js) یافت نشد."
+
+    try:
+        with open(ENGINE_JS_PATH, "r", encoding="utf-8") as f:
+            engine_code = f.read()
+
+        patched_any = False
+        for exe, app in targets:
+            try:
+                wb_js = os.path.join(app, "out", "vs", "workbench", "workbench.desktop.main.js")
+                wb_css = os.path.join(app, "out", "vs", "workbench", "workbench.desktop.main.css")
+                wv_index = os.path.join(app, "out", "vs", "workbench", "contrib", "webview", "browser", "pre", "index.html")
+                p_json = os.path.join(app, "product.json")
+
+                if not os.path.exists(wb_js):
+                    continue
+
+                # 1. Backups
+                for fpath in [wb_js, wb_css, wv_index, p_json]:
+                    if os.path.exists(fpath) and not os.path.exists(fpath + ".bak"):
+                        shutil.copy2(fpath, fpath + ".bak")
+
+                # 2. Patch wb_js (Main Workbench window)
+                with open(wb_js, "r", encoding="utf-8", errors="ignore") as f:
+                    js_content = f.read()
+                if "PERSIAN_FIXER_VSCODE_START" not in js_content:
+                    snippet = "\n/* PERSIAN_FIXER_VSCODE_START */\n;(function() {\n  try {\n" + engine_code + "\n  } catch(e) { console.error('[PersianFixer] VSCode error:', e); }\n})();\n/* PERSIAN_FIXER_VSCODE_END */\n"
+                    with open(wb_js, "a", encoding="utf-8") as f:
+                        f.write(snippet)
+
+                # 3. Patch wv_index (Webviews for Gemini, Continue, Copilot, Cline)
+                if os.path.exists(wv_index):
+                    with open(wv_index, "r", encoding="utf-8", errors="ignore") as f:
+                        wv_content = f.read()
+                    target_marker = "defaultScript.textContent = getVsCodeApiScript(options.allowMultipleAPIAcquire, data.state);"
+                    if "PERSIAN_FIXER_WV_START" not in wv_content and target_marker in wv_content:
+                        replacement = target_marker[:-1] + " + " + repr("\n/* PERSIAN_FIXER_WV_START */\n" + engine_code + "\n/* PERSIAN_FIXER_WV_END */\n") + ";"
+                        new_wv = wv_content.replace(target_marker, replacement, 1)
+                        with open(wv_index, "w", encoding="utf-8") as f:
+                            f.write(new_wv)
+
+                # 4. Update checksums in product.json so VS Code doesn't show [Unsupported]
+                if os.path.exists(p_json):
+                    update_vscode_checksum(p_json, "vs/workbench/workbench.desktop.main.js", wb_js)
+                    if os.path.exists(wb_css):
+                        update_vscode_checksum(p_json, "vs/workbench/workbench.desktop.main.css", wb_css)
+
+                patched_any = True
+            except PermissionError:
+                continue
+            except Exception:
+                continue
+
+        if patched_any:
+            return True, "نرم‌افزار VS Code با موفقیت پچ شد."
+        return False, "فایل‌های اصلی VS Code برای اعمال پچ در دسترس نبودند."
+    except Exception as e:
+        return False, f"خطا در پچ کردن VS Code: {e}"
+
+
+def restore_vscode(auto_close=False):
+    targets = find_vscode_targets()
+    if not targets:
+        return False, "نرم‌افزار VS Code یافت نشد."
+
+    if is_process_running("Code.exe"):
+        if auto_close:
+            close_process("Code.exe")
+        else:
+            return False, "نرم‌افزار VS Code باز است. لطفاً آن را ببندید."
+
+    restored_any = False
+    for exe, app in targets:
+        try:
+            wb_js = os.path.join(app, "out", "vs", "workbench", "workbench.desktop.main.js")
+            wb_css = os.path.join(app, "out", "vs", "workbench", "workbench.desktop.main.css")
+            wv_index = os.path.join(app, "out", "vs", "workbench", "contrib", "webview", "browser", "pre", "index.html")
+            p_json = os.path.join(app, "product.json")
+
+            for fpath in [wb_js, wb_css, wv_index, p_json]:
+                bak = fpath + ".bak"
+                if os.path.exists(bak):
+                    try:
+                        shutil.copy2(bak, fpath)
+                        os.remove(bak)
+                        restored_any = True
+                    except Exception:
+                        pass
+        except PermissionError:
+            continue
+        except Exception:
+            continue
+
+    if restored_any:
+        return True, "نرم‌افزار VS Code به نسخه اولیه بازگردانده شد."
+    return False, "فایل پشتیبان (Backup) برای بازگردانی VS Code یافت نشد."
+
+
+def launch_vscode():
+    targets = find_vscode_targets()
+    if targets:
+        primary_exe, primary_app = targets[0]
+        if os.path.exists(primary_exe):
+            subprocess.Popen([primary_exe])
+            return True, "نرم‌افزار VS Code اجرا شد."
+    return False, "فایل اجرایی VS Code یافت نشد."

@@ -1,7 +1,7 @@
 {
   "name": "persianfixer",
-  "version": "3.10.0",
-  "description": "Smart RTL and Google Vazirmatn font engine for Antigravity, Claude Desktop, OpenCode, and ChatGPT (Codex) on Windows",
+  "version": "3.11.0",
+  "description": "Smart RTL and Google Vazirmatn font engine for Antigravity, VS Code, Claude Desktop, OpenCode, and ChatGPT (Codex) on Windows",
   "main": "persian_engine.js",
   "scripts": {
     "patch": "node asar_patcher.js"
@@ -12,6 +12,10 @@
   },
   "keywords": [
     "antigravity",
+    "vscode",
+    "visual-studio-code",
+    "gemini",
+    "copilot",
     "claude",
     "opencode",
     "chatgpt",

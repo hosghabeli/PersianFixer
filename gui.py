@@ -70,7 +70,7 @@ class PersianFixerApp(tk.Tk):
         self.title("PersianFixer")
         
         # Fixed compact, elegant geometry (no stretching, perfectly centered)
-        win_w, win_h = 580, 710
+        win_w, win_h = 580, 775
         screen_w = self.winfo_screenwidth()
         screen_h = self.winfo_screenheight()
         pos_x = max(0, int((screen_w - win_w) / 2))
@@ -134,7 +134,7 @@ class PersianFixerApp(tk.Tk):
         t_row.pack(anchor="e", pady=(8, 0))
 
         v_badge = tk.Label(
-            t_row, text="v3.10", font=(FONT_NAME, 8, "bold"),
+            t_row, text="v3.11", font=(FONT_NAME, 8, "bold"),
             bg="#21262d", fg=ACCENT_CYAN, padx=5, pady=1
         )
         v_badge.pack(side="left", padx=(0, 6))
@@ -255,6 +255,19 @@ class PersianFixerApp(tk.Tk):
             patch_btn_text="پچ",
             on_run=lambda: self.action_launch_app("chatgpt"),
             on_restore=lambda: self.action_restore_app("chatgpt")
+        )
+
+        # Row 6: Visual Studio Code
+        self.row_vscode = self.create_app_row(
+            cards_container,
+            app_id="vscode",
+            icon_char="📝",
+            name="Visual Studio Code",
+            subtitle="دستیارهای هوش مصنوعی و سایدبار (Gemini, Copilot, Continue)",
+            on_patch=lambda: self.action_patch_app("vscode"),
+            patch_btn_text="پچ",
+            on_run=lambda: self.action_launch_app("vscode"),
+            on_restore=lambda: self.action_restore_app("vscode")
         )
 
         # 5. COMPACT LOG BOX (Clean Terminal Window)
@@ -419,6 +432,7 @@ class PersianFixerApp(tk.Tk):
             cl_st = patcher.get_claude_status()
             op_st = patcher.get_opencode_status()
             cg_st = patcher.get_chatgpt_status()
+            vs_st = patcher.get_vscode_status()
 
             def update():
                 # 1. Font
@@ -489,9 +503,24 @@ class PersianFixerApp(tk.Tk):
                     self.row_chatgpt["btn_patch"].config(text="پچ", state="normal", bg=BTN_PRIMARY)
                     if self.row_chatgpt["btn_run"]: self.row_chatgpt["btn_run"].config(state="normal")
 
+                # 6. Visual Studio Code
+                if not vs_st["installed"]:
+                    self.row_vscode["badge"].config(text="یافت نشد", bg="#21262d", fg=TEXT_DIM)
+                    self.row_vscode["btn_patch"].config(state="disabled")
+                    if self.row_vscode["btn_run"]: self.row_vscode["btn_run"].config(state="disabled")
+                elif vs_st["patched"]:
+                    run_t = " • در حال اجرا" if vs_st["running"] else ""
+                    self.row_vscode["badge"].config(text=f"✓ پچ فعال{run_t}", bg="#0d2818", fg=STATUS_OK_TEXT)
+                    self.row_vscode["btn_patch"].config(text="بروزرسانی", state="normal", bg=BTN_DARK)
+                    if self.row_vscode["btn_run"]: self.row_vscode["btn_run"].config(state="normal")
+                else:
+                    self.row_vscode["badge"].config(text="آماده پچ", bg=STATUS_WARN_BG, fg=STATUS_WARN_TEXT)
+                    self.row_vscode["btn_patch"].config(text="پچ", state="normal", bg=BTN_PRIMARY)
+                    if self.row_vscode["btn_run"]: self.row_vscode["btn_run"].config(state="normal")
+
                 # Master Status
-                installed = [ag_st["installed"], cl_st["installed"], op_st["installed"], cg_st["installed"]]
-                patched = [ag_st["patched"], cl_st["patched"], op_st["patched"], cg_st["patched"]]
+                installed = [ag_st["installed"], cl_st["installed"], op_st["installed"], cg_st["installed"], vs_st["installed"]]
+                patched = [ag_st["patched"], cl_st["patched"], op_st["patched"], cg_st["patched"], vs_st["patched"]]
                 tot_i = sum(1 for x in installed if x)
                 tot_p = sum(1 for x in patched if x)
 
@@ -558,6 +587,12 @@ class PersianFixerApp(tk.Tk):
                 ok, msg = patcher.patch_chatgpt(auto_close=True)
                 self.log(f"برنامه ChatGPT: {msg}", "rtl_ok" if ok else "rtl_err")
 
+            # Visual Studio Code
+            vs = patcher.get_vscode_status()
+            if vs["installed"]:
+                ok, msg = patcher.patch_vscode(auto_close=True)
+                self.log(f"برنامه VS Code: {msg}", "rtl_ok" if ok else "rtl_err")
+
             self.log("تمامی ابزارهای شناسایی‌شده با موفقیت پچ و فعال گردیدند. ✓", "rtl_ok")
             self.refresh_statuses()
 
@@ -565,7 +600,7 @@ class PersianFixerApp(tk.Tk):
 
     def action_patch_app(self, app_name):
         def worker():
-            names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT"}
+            names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT", "vscode": "VS Code"}
             fa = names_fa.get(app_name, app_name)
             self.log(f"در حال اعمال پچ فارسی روی {fa}...", "rtl_info")
             
@@ -577,6 +612,8 @@ class PersianFixerApp(tk.Tk):
                 ok, msg = patcher.patch_opencode(auto_close=True)
             elif app_name == "chatgpt":
                 ok, msg = patcher.patch_chatgpt(auto_close=True)
+            elif app_name == "vscode":
+                ok, msg = patcher.patch_vscode(auto_close=True)
             else:
                 return
 
@@ -587,7 +624,7 @@ class PersianFixerApp(tk.Tk):
 
     def action_restore_app(self, app_name):
         def worker():
-            names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT"}
+            names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT", "vscode": "VS Code"}
             fa = names_fa.get(app_name, app_name)
             self.log(f"در حال بازگردانی {fa} به فایل اصلی...", "rtl_info")
 
@@ -599,6 +636,8 @@ class PersianFixerApp(tk.Tk):
                 ok, msg = patcher.restore_opencode(auto_close=True)
             elif app_name == "chatgpt":
                 ok, msg = patcher.restore_chatgpt(auto_close=True)
+            elif app_name == "vscode":
+                ok, msg = patcher.restore_vscode(auto_close=True)
             else:
                 return
 
@@ -608,7 +647,7 @@ class PersianFixerApp(tk.Tk):
         threading.Thread(target=worker, daemon=True).start()
 
     def action_launch_app(self, app_name):
-        names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT"}
+        names_fa = {"antigravity": "Antigravity", "claude": "Claude", "opencode": "OpenCode", "chatgpt": "ChatGPT", "vscode": "VS Code"}
         fa = names_fa.get(app_name, app_name)
         
         if app_name == "antigravity":
@@ -619,6 +658,8 @@ class PersianFixerApp(tk.Tk):
             ok, msg = patcher.launch_opencode()
         elif app_name == "chatgpt":
             ok, msg = patcher.launch_chatgpt()
+        elif app_name == "vscode":
+            ok, msg = patcher.launch_vscode()
         else:
             return
 

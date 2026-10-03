@@ -4,9 +4,9 @@
   <img src="https://files.catbox.moe/is7dtt.png" alt="PersianFixer Logo" width="128" height="128" />
   
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
-  <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
+  <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, VS Code, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.10.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.11.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosghabeli/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -19,7 +19,7 @@
 **PersianFixer** یک ابزار سبک، سریع و همه‌جانبه برای ویندوز است که به طور تخصصی برای حل مشکلات نمایش، چیدمان و تایپ زبان فارسی در نرم‌افزارهای دسکتاپ هوش مصنوعی و کدنویسی ساخته شده است.
 
 این ابزار به صورت دوگانه عرضه می‌شود:
-1. **نرم‌افزار دسکتاپ ویندوز:** پچ خودکار نرم‌افزارهای دسکتاپ شامل Google Antigravity، Claude Desktop، OpenCode و ChatGPT Windows.
+1. **نرم‌افزار دسکتاپ ویندوز:** پچ خودکار نرم‌افزارهای دسکتاپ شامل Google Antigravity، Visual Studio Code (سایدبارها و وب‌ویوهای Gemini, Copilot, Continue, Cline)، Claude Desktop، OpenCode و ChatGPT Windows.
 2. **اکستنشن کروم و اج (Manifest V3):** راست‌چین‌سازی هوشمند و اعمال فونت وزیرمتن در مرورگر وب برای چت‌بات‌های ChatGPT, Claude, Gemini, DeepSeek, Perplexity و تمامی وب‌سایت‌ها.
 
 ---
@@ -47,7 +47,7 @@
 
 ### روش ۱: دانلود بسته آماده (پیشنهادی)
 به بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) مراجعه کرده و آخرین نسخه فشرده یا فایل نصبی را دانلود کنید:
-1. فایل نصاب `PersianFixer-v3.10.0-Setup.exe` را اجرا و نصب کنید.
+1. فایل نصاب `PersianFixer-v3.11.0-Setup.exe` را اجرا و نصب کنید.
 2. روی دکمه بزرگ **«فعال‌سازی هوشمند تمام ابزارها»** کلیک کنید!
 3. نرم‌افزارهای خود را اجرا کنید و از محیط زیبا و روان فارسی لذت ببرید.
 
@@ -79,7 +79,14 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.10.0 (جدید - New)
+### Version 3.11.0 (جدید - New)
+- 📝 **پشتیبانی کامل از Microsoft Visual Studio Code**:
+  - فارسی‌سازی کامل محیط VS Code و پشتیبانی ویژه از دستیارهای هوش مصنوعی سایدبار (Google Gemini Code Assist, GitHub Copilot, Continue, Cline و...).
+  - تزریق مستقیم موتور راست‌چین و فونت وزیرمتن به موتور Webview (`pre/index.html`) با دور زدن محدودیت‌های امنیتی CSP بدون ایجاد اختلال در ادیتور کد و متون انگلیسی.
+  - محاسبه و به‌روزرسانی خودکار Checksum در `product.json` جهت جلوگیری از نمایش برچسب اخطار `[Unsupported]` در تایتل‌بار ویندوز.
+  - پشتیبانی هوشمند از انواع نصب‌های کاربر و سیستم (User Installer و System Installer).
+
+### Version 3.10.0
 - 📊 **پشتیبانی کامل از جداول مارک‌داون (RTL Tables)**: تشخیص هوشمند متن فارسی در جداول و معکوس‌سازی ترتیب ستون‌ها به راست‌چین (`dir="rtl"`) تا ستون اول در سمت راست قرار گیرد.
 - 🔤 **فونت رسمی وزیرمتن در سلول‌های جدول**: حذف استایل اشتباه مونو اسپیس از جداول و رندر روان حروف فارسی بدون فاصله غیرعادی.
 - 🔒 **ایزوله‌سازی کدهای درون‌جدولی**: تگ‌های فنی و اسامی متغیرها داخل سلول‌های جدول کماکان به صورت چپ‌چین و مونو باقی می‌مانند.
