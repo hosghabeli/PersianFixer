@@ -573,19 +573,36 @@ def patch_vscode(auto_close=False):
                 # 2. Patch wb_js (Main Workbench window)
                 with open(wb_js, "r", encoding="utf-8", errors="ignore") as f:
                     js_content = f.read()
-                if "PERSIAN_FIXER_VSCODE_START" not in js_content:
-                    snippet = "\n/* PERSIAN_FIXER_VSCODE_START */\n;(function() {\n  try {\n" + engine_code + "\n  } catch(e) { console.error('[PersianFixer] VSCode error:', e); }\n})();\n/* PERSIAN_FIXER_VSCODE_END */\n"
+                snippet = "\n/* PERSIAN_FIXER_VSCODE_START */\n;(function() {\n  try {\n" + engine_code + "\n  } catch(e) { console.error('[PersianFixer] VSCode error:', e); }\n})();\n/* PERSIAN_FIXER_VSCODE_END */\n"
+                if "/* PERSIAN_FIXER_VSCODE_START */" in js_content:
+                    start_idx = js_content.find("/* PERSIAN_FIXER_VSCODE_START */")
+                    end_idx = js_content.find("/* PERSIAN_FIXER_VSCODE_END */", start_idx)
+                    if end_idx != -1:
+                        end_idx += len("/* PERSIAN_FIXER_VSCODE_END */")
+                        js_content = js_content[:start_idx].rstrip() + "\n" + snippet.strip() + "\n" + js_content[end_idx:].lstrip()
+                    else:
+                        js_content = js_content[:start_idx].rstrip() + "\n" + snippet.strip() + "\n"
+                    with open(wb_js, "w", encoding="utf-8") as f:
+                        f.write(js_content)
+                else:
                     with open(wb_js, "a", encoding="utf-8") as f:
                         f.write(snippet)
 
                 # 3. Patch wv_index (Webviews for Gemini, Continue, Copilot, Cline)
                 if os.path.exists(wv_index):
-                    with open(wv_index, "r", encoding="utf-8", errors="ignore") as f:
-                        wv_content = f.read()
+                    wv_snippet = "\n/* PERSIAN_FIXER_WV_START */\n" + engine_code + "\n/* PERSIAN_FIXER_WV_END */\n"
+                    # If backup exists, use clean base from backup
+                    if os.path.exists(wv_index + ".bak"):
+                        with open(wv_index + ".bak", "r", encoding="utf-8", errors="ignore") as f_bak:
+                            base_wv = f_bak.read()
+                    else:
+                        with open(wv_index, "r", encoding="utf-8", errors="ignore") as f_cur:
+                            base_wv = f_cur.read()
+                    
                     target_marker = "defaultScript.textContent = getVsCodeApiScript(options.allowMultipleAPIAcquire, data.state);"
-                    if "PERSIAN_FIXER_WV_START" not in wv_content and target_marker in wv_content:
-                        replacement = target_marker[:-1] + " + " + repr("\n/* PERSIAN_FIXER_WV_START */\n" + engine_code + "\n/* PERSIAN_FIXER_WV_END */\n") + ";"
-                        new_wv = wv_content.replace(target_marker, replacement, 1)
+                    if target_marker in base_wv:
+                        replacement = target_marker[:-1] + " + " + repr(wv_snippet) + ";"
+                        new_wv = base_wv.replace(target_marker, replacement, 1)
                         with open(wv_index, "w", encoding="utf-8") as f:
                             f.write(new_wv)
 

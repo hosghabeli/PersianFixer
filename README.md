@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای دسکتاپ هوش مصنوعی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Antigravity, VS Code, Claude Desktop, OpenCode & ChatGPT (Windows)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.11.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.12.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosghabeli/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
   [![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
@@ -31,7 +31,9 @@
 - 📐 **تشخیص خودکار و هوشمند جهت متن (RTL)**:
   - راست‌چین شدن هوشمند پیام‌ها، گفتگوها و دیالوگ‌های فارسی.
 - 💻 **جداسازی و حفظ کدهای برنامه‌نویسی و متون انگلیسی (LTR)**:
-  - بلاک‌های کد (`pre`, `code`)، مسیرهای فایل و دستورات ترمینال کاملاً استاندارد و چپ‌چین باقی می‌مانند.
+  - بلاک‌های کد برنامه‌نویسی (`python`, `javascript` و...)، مسیرهای فایل و دستورات ترمینال کاملاً استاندارد و چپ‌چین باقی می‌مانند.
+- 📝 **پشتیبانی هوشمند از بلاک‌های مارک‌داون و متنی (RTL Markdown Blocks)**:
+  - بلاک‌های کد با زبان `markdown` یا متن‌های فارسی به صورت خودکار راست‌چین شده و با قلم وزیرمتن رندر می‌شوند، در حالی که مقادیر فنی درون آنها (آی‌پی، دامین، متغیرها) چپ‌چین و مونو باقی می‌مانند.
 - ⚡ **پچ هوشمند ۱-کلیک (Master 1-Click Patch)**:
   - تنها با فشردن یک دکمه، تمام برنامه‌های نصب‌شده روی سیستم شما شناسایی و هم‌زمان پچ می‌شوند.
 - 🟢 **نشانگر وضعیت جامع (Master Status Indicator)**:
@@ -47,16 +49,16 @@
 
 ### روش ۱: دانلود بسته آماده (پیشنهادی)
 به بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) مراجعه کرده و آخرین نسخه فشرده یا فایل نصبی را دانلود کنید:
-1. فایل نصاب `PersianFixer-v3.11.0-Setup.exe` را اجرا و نصب کنید.
+1. فایل نصاب `PersianFixer-v3.12.0-Setup.exe` را اجرا و نصب کنید.
 2. روی دکمه بزرگ **«فعال‌سازی هوشمند تمام ابزارها»** کلیک کنید!
 3. نرم‌افزارهای خود را اجرا کنید و از محیط زیبا و روان فارسی لذت ببرید.
 
 ### روش ۲: استفاده از اکستنشن مرورگر (گوگل کروم و مایکروسافت اج)
 برای استفاده از PersianFixer داخل مرورگر و روی نسخه‌های تحت وب ChatGPT، Claude، Gemini و ...:
-1. پوشه `extension` داخل مخزن را دانلود کنید یا فایل فشرده `PersianFixer-Chrome-Extension-v1.0.0.zip` را از بخش Releases دریافت و استخراج کنید.
+1. پوشه `extension` داخل مخزن را دانلود کنید یا فایل فشرده `PersianFixer-Chrome-Extension-v1.0.2.zip` را از بخش Releases دریافت و استخراج کنید.
 2. در مرورگر کروم به آدرس `chrome://extensions` بروید.
 3. گزینه **Developer mode** را از گوشه بالا فعال کنید.
-4. روی **Load unpacked** کلیک کرده و پوشه `extension` را انتخاب کنید.
+4. روی **Load unpacked** کلیک کرده و پوشه `extension` را انتخاب کنید (یا در صورت داشتن نسخه قبلی، دکمه Refresh 🔄 اکستنشن را بزنید).
 
 ### روش ۳: اجرا از سورس کد دسکتاپ (برای توسعه‌دهندگان)
 پیش‌نیازها:
@@ -79,7 +81,14 @@ python gui.py
 
 ## 📋 تاریخچه نسخه‌ها | Changelog
 
-### Version 3.11.0 (جدید - New)
+### Version 3.12.0 (جدید - New)
+- 📝 **پشتیبانی کامل از بلاک‌های متنی و مارک‌داون (Markdown & Prose Code Blocks)**:
+  - تشخیص هوشمند بلاک‌های متنی/مارک‌داون (`language-markdown`, `language-text` یا بلاک‌های کد متنی) حاوی متن فارسی و راست‌چین‌سازی کامل آنها (`dir="rtl"`).
+  - اعمال قلم چشم‌نواز وزیرمتن و تصحیح چرخش و شکست خطوط فارسی و علامت‌های نگارشی (`###`, `**`, پرانتزها و شماره‌ها).
+  - ایزوله‌سازی توکن‌های فنی و مقادیر بک‌تیک (مانند آی‌پی‌ها، پورت‌ها، دستورات و کلمات انگلیسی) به صورت LTR استاندارد با قلم مونو اسپیس.
+  - تفکیک قطعی از کدهای برنامه‌نویسی واقعی (Python, JS, C++, Go, Bash) که بدون تغییر کاملاً چپ‌چین و استاندارد باقی می‌مانند.
+
+### Version 3.11.0
 - 📝 **پشتیبانی کامل از Microsoft Visual Studio Code**:
   - فارسی‌سازی کامل محیط VS Code و پشتیبانی ویژه از دستیارهای هوش مصنوعی سایدبار (Google Gemini Code Assist, GitHub Copilot, Continue, Cline و...).
   - تزریق مستقیم موتور راست‌چین و فونت وزیرمتن به موتور Webview (`pre/index.html`) با دور زدن محدودیت‌های امنیتی CSP بدون ایجاد اختلال در ادیتور کد و متون انگلیسی.

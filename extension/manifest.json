@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "PersianFixer: اصلاح هوشمند فارسی و راست‌چین چت‌بات‌های هوش مصنوعی",
   "short_name": "PersianFixer",
-  "version": "1.0.1",
-  "description": "راست‌چین‌سازی هوشمند (RTL)، اصلاح جداول و اعمال فونت وزیرمتن در وب‌سایت‌ها و چت‌بات‌های هوش مصنوعی (ChatGPT, Claude, Gemini, DeepSeek, Perplexity و...).",
+  "version": "1.0.2",
+  "description": "راست‌چین‌سازی هوشمند (RTL)، اصلاح جداول و بلاک‌های متنی/مارک‌داون و اعمال فونت وزیرمتن در وب‌سایت‌ها و چت‌بات‌های هوش مصنوعی (ChatGPT, Claude, Gemini, DeepSeek, Perplexity و...).",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
