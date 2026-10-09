@@ -432,6 +432,8 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
         'perplexity.ai',
         'poe.com',
         'copilot.microsoft.com',
+        'bing.com',
+        'edgeservices.bing.com',
         'mistral.ai',
         'groq.com',
         'v0.dev',
@@ -446,6 +448,12 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
         // Safety guard: Never touch Gmail, Docs, YouTube or internal search
         if (hostname.includes('mail.google.com') || hostname.includes('youtube.com') || hostname.includes('docs.google.com')) {
             return false;
+        }
+
+        // On bing.com, restrict strictly to Copilot / Chat pages and Edge sidebar
+        if (hostname.includes('bing.com') && !window.location.pathname.includes('chat') && !hostname.includes('edgeservices')) {
+            const isWhitelisted = settings.whitelist && settings.whitelist.some(w => hostname === w.toLowerCase());
+            if (!isWhitelisted) return false;
         }
 
         // Check blacklist
