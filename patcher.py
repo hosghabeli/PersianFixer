@@ -6,6 +6,7 @@ import time
 import json
 import hashlib
 import base64
+import struct
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ENGINE_JS_PATH = os.path.join(SCRIPT_DIR, "persian_engine.js")
@@ -251,12 +252,12 @@ def patch_claude(auto_close=False):
 
     os.makedirs(CLAUDE_TARGET_DIR, exist_ok=True)
 
-    if not os.path.exists(CLAUDE_TARGET_EXE):
-        subprocess.run(
-            ["robocopy", CLAUDE_SOURCE_DIR, CLAUDE_TARGET_DIR, "/E", "/NFL", "/NDL", "/NJH", "/NJS", "/nc", "/ns", "/np"],
-            check=False,
-            creationflags=subprocess.CREATE_NO_WINDOW
-        )
+    # Always keep native binaries in sync with source appx package, excluding app.asar
+    subprocess.run(
+        ["robocopy", CLAUDE_SOURCE_DIR, CLAUDE_TARGET_DIR, "/E", "/XF", "app.asar", "/NFL", "/NDL", "/NJH", "/NJS", "/nc", "/ns", "/np"],
+        check=False,
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
 
     try:
         proc = subprocess.run(
@@ -397,6 +398,37 @@ def get_chatgpt_status():
         "running": running
     }
 
+def update_chatgpt_exe_integrity_hash():
+    try:
+        if not os.path.exists(CHATGPT_SOURCE_ASAR) or not os.path.exists(CHATGPT_TARGET_ASAR) or not os.path.exists(CHATGPT_TARGET_EXE):
+            return False
+
+        with open(CHATGPT_SOURCE_ASAR, 'rb') as f:
+            data = f.read(16)
+            _, _, _, src_json_len = struct.unpack('<IIII', data)
+            src_json = f.read(src_json_len)
+            src_hash = hashlib.sha256(src_json).hexdigest().encode('ascii')
+
+        with open(CHATGPT_TARGET_ASAR, 'rb') as f:
+            data = f.read(16)
+            _, _, _, tgt_json_len = struct.unpack('<IIII', data)
+            tgt_json = f.read(tgt_json_len)
+            tgt_hash = hashlib.sha256(tgt_json).hexdigest().encode('ascii')
+
+        with open(CHATGPT_TARGET_EXE, 'rb') as f:
+            exe_data = f.read()
+
+        if src_hash in exe_data:
+            patched_exe = exe_data.replace(src_hash, tgt_hash, 1)
+            with open(CHATGPT_TARGET_EXE, 'wb') as f:
+                f.write(patched_exe)
+            return True
+        elif tgt_hash in exe_data:
+            return True
+    except Exception:
+        pass
+    return False
+
 def patch_chatgpt(auto_close=False):
     if not CHATGPT_SOURCE_DIR or not os.path.exists(CHATGPT_SOURCE_DIR):
         return False, "برنامه رسمی ChatGPT (Codex) در ویندوز یافت نشد."
@@ -410,12 +442,12 @@ def patch_chatgpt(auto_close=False):
 
     os.makedirs(CHATGPT_TARGET_DIR, exist_ok=True)
 
-    if not os.path.exists(CHATGPT_TARGET_EXE):
-        subprocess.run(
-            ["robocopy", CHATGPT_SOURCE_DIR, CHATGPT_TARGET_DIR, "/E", "/NFL", "/NDL", "/NJH", "/NJS", "/nc", "/ns", "/np"],
-            check=False,
-            creationflags=subprocess.CREATE_NO_WINDOW
-        )
+    # Always keep native binaries in sync with source appx package, excluding app.asar
+    subprocess.run(
+        ["robocopy", CHATGPT_SOURCE_DIR, CHATGPT_TARGET_DIR, "/E", "/XF", "app.asar", "/NFL", "/NDL", "/NJH", "/NJS", "/nc", "/ns", "/np"],
+        check=False,
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
 
     try:
         proc = subprocess.run(
@@ -426,6 +458,7 @@ def patch_chatgpt(auto_close=False):
             creationflags=subprocess.CREATE_NO_WINDOW
         )
         if proc.returncode == 0 and "SUCCESS" in proc.stdout:
+            update_chatgpt_exe_integrity_hash()
             ensure_start_menu_shortcut(
                 CHATGPT_TARGET_EXE,
                 "ChatGPT.lnk",
@@ -453,6 +486,10 @@ def restore_chatgpt(auto_close=False):
 
 def launch_chatgpt():
     if os.path.exists(CHATGPT_TARGET_EXE):
+        if is_process_running("ChatGPT.exe") or is_process_running("Codex.exe"):
+            close_process("ChatGPT.exe")
+            close_process("Codex.exe")
+            time.sleep(1)
         subprocess.Popen([CHATGPT_TARGET_EXE], cwd=CHATGPT_TARGET_DIR)
         return True, "برنامه ChatGPT اجرا شد."
     return False, "برنامه ChatGPT یافت نشد."

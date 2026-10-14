@@ -48,14 +48,27 @@ body, [class*="message"], [class*="chat"], [class*="prose"], [class*="content"] 
 ul[dir="rtl"], ol[dir="rtl"], .persian-list, [dir="rtl"] ul, [dir="rtl"] ol {
   direction: rtl !important;
   text-align: right !important;
-  padding-right: 1.8rem !important;
-  padding-left: 0.5rem !important;
+  padding-right: 2rem !important;
+  padding-left: 0 !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  list-style-position: outside !important;
 }
 
-li[dir="rtl"], li.persian-text {
+li[dir="rtl"], li.persian-text, [dir="rtl"] li, .persian-list li {
   direction: rtl !important;
   text-align: right !important;
+  padding-right: 0.35rem !important;
+  padding-left: 0 !important;
   margin-right: 0 !important;
+  margin-left: 0 !important;
+  unicode-bidi: isolate !important;
+}
+
+li[dir="rtl"]::marker, li.persian-text::marker, [dir="rtl"] li::marker, .persian-list li::marker {
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* Preserve Programming Code Blocks & Terminal as Clean LTR */
@@ -327,9 +340,9 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                 return;
             }
 
-            // Text elements (Block-level and tables: p, li, h1..h6, blockquote, div, th, td, table)
+            // Text elements (Block-level, lists and tables: p, li, ol, ul, h1..h6, blockquote, div, th, td, table)
             // Never apply dir=rtl to inline elements (span, a) as it breaks natural BiDi flow of English words
-            if (/^(p|li|h1|h2|h3|h4|h5|h6|blockquote|div|th|td|table)$/i.test(tag)) {
+            if (/^(p|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|div|th|td|table)$/i.test(tag)) {
                 let containsPersian = false;
 
                 // Check text nodes
@@ -343,8 +356,8 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                     }
                 }
 
-                // If tag is p, li, h1..h6, blockquote, th, td, table, check full text if not found in direct children
-                if (!containsPersian && /^(p|li|h1|h2|h3|h4|h5|h6|blockquote|th|td|table)$/i.test(tag)) {
+                // If tag is p, li, ol, ul, h1..h6, blockquote, th, td, table, check full text if not found in direct children
+                if (!containsPersian && /^(p|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|th|td|table)$/i.test(tag)) {
                     const text = el.innerText || el.textContent || '';
                     if (text && PERSIAN_REGEX.test(text)) {
                         containsPersian = true;
@@ -354,28 +367,52 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
                 if (containsPersian) {
                     if (el.getAttribute('dir') !== 'rtl') {
                         el.setAttribute('dir', 'rtl');
-                        el.classList.add(tag === 'table' ? 'persian-table' : 'persian-text');
+                        el.classList.add(tag === 'table' ? 'persian-table' : (tag === 'ol' || tag === 'ul' ? 'persian-list' : 'persian-text'));
                         el.style.direction = 'rtl';
                         el.style.textAlign = 'right';
                         el.style.fontFamily = "'Vazirmatn', sans-serif";
+                    }
 
-                        // If li, also set list to rtl
-                        if (tag === 'li' && el.parentElement && /^(ul|ol)$/i.test(el.parentElement.tagName)) {
-                            el.parentElement.setAttribute('dir', 'rtl');
-                            el.parentElement.classList.add('persian-list');
-                            el.parentElement.style.direction = 'rtl';
-                            el.parentElement.style.textAlign = 'right';
+                    // If li, p, or div inside a list, ensure enclosing list and li are also RTL
+                    if (tag === 'li' || tag === 'p' || tag === 'div') {
+                        const list = el.closest ? el.closest('ol, ul') : null;
+                        if (list && list.getAttribute('dir') !== 'rtl') {
+                            list.setAttribute('dir', 'rtl');
+                            list.classList.add('persian-list');
+                            list.style.direction = 'rtl';
+                            list.style.textAlign = 'right';
                         }
+                        const liItem = tag === 'li' ? el : (el.closest ? el.closest('li') : null);
+                        if (liItem && liItem.getAttribute('dir') !== 'rtl') {
+                            liItem.setAttribute('dir', 'rtl');
+                            liItem.classList.add('persian-text');
+                            liItem.style.direction = 'rtl';
+                            liItem.style.textAlign = 'right';
+                        }
+                    }
 
-                        // If th or td, also set enclosing table to rtl so columns order RTL
-                        if (tag === 'th' || tag === 'td') {
-                            const tbl = el.closest ? el.closest('table') : null;
-                            if (tbl && tbl.getAttribute('dir') !== 'rtl') {
-                                tbl.setAttribute('dir', 'rtl');
-                                tbl.classList.add('persian-table');
-                                tbl.style.direction = 'rtl';
-                                tbl.style.textAlign = 'right';
+                    // If tag is ol or ul, ensure all child li elements are marked RTL
+                    if (tag === 'ol' || tag === 'ul') {
+                        const items = el.querySelectorAll ? el.querySelectorAll('li') : [];
+                        for (let c = 0; c < items.length; c++) {
+                            const item = items[c];
+                            if (item.getAttribute('dir') !== 'rtl') {
+                                item.setAttribute('dir', 'rtl');
+                                item.classList.add('persian-text');
+                                item.style.direction = 'rtl';
+                                item.style.textAlign = 'right';
                             }
+                        }
+                    }
+
+                    // If th or td, also set enclosing table to rtl so columns order RTL
+                    if (tag === 'th' || tag === 'td') {
+                        const tbl = el.closest ? el.closest('table') : null;
+                        if (tbl && tbl.getAttribute('dir') !== 'rtl') {
+                            tbl.setAttribute('dir', 'rtl');
+                            tbl.classList.add('persian-table');
+                            tbl.style.direction = 'rtl';
+                            tbl.style.textAlign = 'right';
                         }
                     }
                 }
@@ -388,7 +425,7 @@ textarea.persian-input, input.persian-input, [contenteditable="true"].persian-in
     function scanAll() {
         try {
             injectStyle(document);
-            const allElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote, div, th, td, table, textarea, input, [contenteditable="true"], pre, code');
+            const allElements = document.querySelectorAll('p, li, ol, ul, h1, h2, h3, h4, h5, h6, blockquote, div, th, td, table, textarea, input, [contenteditable="true"], pre, code');
             for (let i = 0; i < allElements.length; i++) {
                 processSingleElement(allElements[i]);
             }
