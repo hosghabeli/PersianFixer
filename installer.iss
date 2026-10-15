@@ -50,6 +50,8 @@ Name: "autostart"; Description: "اجرا همراه با بالا آمدن وی
 [Files]
 Source: "gui.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "patcher.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "watcher.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "config.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "font_installer.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "autostart.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "persian_engine.js"; DestDir: "{app}"; Flags: ignoreversion

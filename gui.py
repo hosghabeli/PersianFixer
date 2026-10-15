@@ -25,6 +25,8 @@ except Exception:
 import font_installer
 import patcher
 import autostart
+import config
+from watcher import AutoPatchWatcher
 
 # --- COLOR PALETTE (Modern Ultra-Clean Dark Slate) ---
 BG_MAIN = "#0d1117"        # Deep slate background
@@ -70,7 +72,7 @@ class PersianFixerApp(tk.Tk):
         self.title("PersianFixer")
         
         # Fixed compact, elegant geometry (no stretching, perfectly centered)
-        win_w, win_h = 580, 775
+        win_w, win_h = 580, 795
         screen_w = self.winfo_screenwidth()
         screen_h = self.winfo_screenheight()
         pos_x = max(0, int((screen_w - win_w) / 2))
@@ -98,8 +100,18 @@ class PersianFixerApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.minimize_to_tray)
         self.tray_icon = None
 
+        self.watcher = AutoPatchWatcher(
+            app=self,
+            tray_icon=None,
+            on_status_change=self.refresh_statuses
+        )
+
         self.setup_ui()
         self.setup_tray()
+        if self.tray_icon:
+            self.watcher.set_tray_icon(self.tray_icon)
+        self.watcher.start()
+
         self.refresh_statuses()
 
         if "--tray" in sys.argv or "--minimized" in sys.argv:
@@ -306,14 +318,17 @@ class PersianFixerApp(tk.Tk):
         self.log_text.tag_configure("rtl_warn", justify="right", foreground=STATUS_WARN_TEXT)
         self.log_text.tag_configure("rtl_err", justify="right", foreground=STATUS_ERR_TEXT)
 
-        # Bottom controls (Autostart toggle + Tray note)
+        # Bottom controls (Autostart toggle + Auto-Patch toggle + Tray note)
         bottom_frame = tk.Frame(self, bg=BG_MAIN)
         bottom_frame.pack(side="bottom", fill="x", padx=16, pady=(0, 6))
 
+        ctrl_row = tk.Frame(bottom_frame, bg=BG_MAIN)
+        ctrl_row.pack(fill="x", pady=(0, 3))
+
         self.autostart_var = tk.BooleanVar(value=autostart.is_autostart_enabled())
         chk_autostart = tk.Checkbutton(
-            bottom_frame,
-            text="اجرای خودکار همراه با روشن شدن ویندوز (Startup)",
+            ctrl_row,
+            text="اجرا با ویندوز (Startup)",
             variable=self.autostart_var,
             command=self.on_toggle_autostart_gui,
             font=(FONT_NAME, 8),
@@ -326,11 +341,27 @@ class PersianFixerApp(tk.Tk):
         )
         chk_autostart.pack(side="right")
 
+        self.autopatch_var = tk.BooleanVar(value=config.get_setting("auto_patch", True))
+        chk_autopatch = tk.Checkbutton(
+            ctrl_row,
+            text="⚡ اعمال خودکار پچ پس از آپدیت‌ها (Auto-Patch)",
+            variable=self.autopatch_var,
+            command=self.on_toggle_autopatch_gui,
+            font=(FONT_NAME, 8),
+            bg=BG_MAIN,
+            fg=ACCENT_CYAN,
+            selectcolor="#161b22",
+            activebackground=BG_MAIN,
+            activeforeground=TEXT_WHITE,
+            cursor="hand2"
+        )
+        chk_autopatch.pack(side="left")
+
         footer = tk.Label(
-            bottom_frame, text="• با بستن پنجره، برنامه در System Tray فعال می‌ماند",
+            bottom_frame, text="• با بستن پنجره، برنامه در System Tray فعال مانده و برنامه‌ها را پس از آپدیت خودکار پچ می‌کند",
             font=(FONT_NAME, 7), bg=BG_MAIN, fg=TEXT_DIM
         )
-        footer.pack(side="left")
+        footer.pack(fill="x")
 
         self.log("سیستم با موفقیت آماده به کار شد.", "rtl_info")
 
@@ -676,6 +707,7 @@ class PersianFixerApp(tk.Tk):
                 item('نمایش پنجره PersianFixer', self.restore_from_tray, default=True),
                 pystray.Menu.SEPARATOR,
                 item('اجرا همراه با ویندوز', self.toggle_autostart_tray, checked=lambda item: autostart.is_autostart_enabled()),
+                item('پایش و اعمال خودکار پچ', self.toggle_autopatch_tray, checked=lambda item: config.get_setting("auto_patch", True)),
                 pystray.Menu.SEPARATOR,
                 item('اجرای Antigravity', lambda: patcher.launch_antigravity()),
                 item('اجرای Claude', lambda: patcher.launch_claude()),
@@ -704,6 +736,29 @@ class PersianFixerApp(tk.Tk):
             self.autostart_var.set(new_val)
         self.log(msg, "rtl_ok" if ok else "rtl_err")
 
+    def on_toggle_autopatch_gui(self):
+        val = self.autopatch_var.get()
+        config.set_setting("auto_patch", val)
+        if val:
+            self.log("دیده‌بان پچ خودکار فعال شد. آپدیت‌های جدید به صورت هوشمند پچ می‌شوند. ✓", "rtl_ok")
+            if hasattr(self, "watcher") and self.watcher:
+                self.watcher.trigger_check()
+        else:
+            self.log("دیده‌بان پچ خودکار موقتاً غیرفعال شد.", "rtl_warn")
+
+    def toggle_autopatch_tray(self, icon=None, item=None):
+        current = config.get_setting("auto_patch", True)
+        new_val = not current
+        config.set_setting("auto_patch", new_val)
+        if hasattr(self, "autopatch_var"):
+            self.autopatch_var.set(new_val)
+        if new_val:
+            self.log("دیده‌بان پچ خودکار فعال شد. ✓", "rtl_ok")
+            if hasattr(self, "watcher") and self.watcher:
+                self.watcher.trigger_check()
+        else:
+            self.log("دیده‌بان پچ خودکار غیرفعال شد.", "rtl_warn")
+
     def minimize_to_tray(self):
         self.withdraw()
 
@@ -729,6 +784,8 @@ class PersianFixerApp(tk.Tk):
         threading.Thread(target=listener, daemon=True).start()
 
     def quit_app(self, icon=None, item=None):
+        if hasattr(self, "watcher") and self.watcher:
+            self.watcher.stop()
         if self.tray_icon:
             self.tray_icon.stop()
         self.after(0, self.destroy)
