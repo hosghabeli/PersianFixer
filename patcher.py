@@ -8,7 +8,10 @@ import hashlib
 import base64
 import struct
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, 'frozen', False):
+    SCRIPT_DIR = os.path.dirname(sys.executable)
+else:
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ENGINE_JS_PATH = os.path.join(SCRIPT_DIR, "persian_engine.js")
 ASAR_PATCHER_JS = os.path.join(SCRIPT_DIR, "asar_patcher.js")
 

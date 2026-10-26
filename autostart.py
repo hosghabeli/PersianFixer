@@ -8,8 +8,10 @@ APP_NAME = "PersianFixer"
 def get_autostart_command():
     """
     Returns the command to run PersianFixer minimized in tray on Windows startup.
-    Prefers PersianFixer.vbs if present, otherwise uses pythonw.exe gui.py --tray.
     """
+    if getattr(sys, "frozen", False):
+        exe_path = sys.executable
+        return f'"{exe_path}" --tray'
     script_dir = os.path.dirname(os.path.abspath(__file__))
     vbs_path = os.path.join(script_dir, "PersianFixer.vbs")
     

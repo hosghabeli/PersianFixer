@@ -10,7 +10,7 @@
 #define MyAppName "PersianFixer"
 #define MyAppPublisher "Hossein Gholami"
 #define MyAppURL "https://github.com/hosghabeli/PersianFixer"
-#define MyAppExeName "PersianFixer.vbs"
+#define MyAppExeName "PersianFixer.exe"
 
 [Setup]
 AppId={{D37E7A5A-4B28-44A9-9FE8-F5BE75069B88}
@@ -46,21 +46,14 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "autostart"; Description: "اجرا همراه با بالا آمدن ویندوز (Start with Windows)"; GroupDescription: "تنظیمات سیستمی:"; Flags: unchecked
+Name: "desktopicon"; Description: "ایجاد میانبر روی دسکتاپ (Create desktop shortcut)"; GroupDescription: "میانبرها:"; Flags: unchecked
 
 [Files]
-Source: "gui.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "patcher.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "watcher.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "config.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "font_installer.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "autostart.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "PersianFixer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "persian_engine.js"; DestDir: "{app}"; Flags: ignoreversion
 Source: "asar_patcher.js"; DestDir: "{app}"; Flags: ignoreversion
 Source: "apply_antigravity_patch.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "PersianFixer.vbs"; DestDir: "{app}"; Flags: ignoreversion
-Source: "run.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "package.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "requirements.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "icon.png"; DestDir: "{app}"; Flags: ignoreversion
 Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
@@ -69,10 +62,11 @@ Source: "fonts\*"; DestDir: "{app}\fonts"; Flags: ignoreversion recursesubdirs c
 Source: "node_modules\*"; DestDir: "{app}\node_modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "wscript.exe"; Parameters: """{app}\{#MyAppExeName}"""; WorkingDir: "{app}"; IconFilename: "{app}\icon.ico"; Comment: "دستیار فارسی و فونت وزیرمتن برای ابزارهای هوش مصنوعی"
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\icon.ico"; Comment: "دستیار فارسی و فونت وزیرمتن برای ابزارهای هوش مصنوعی"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\icon.ico"; Comment: "دستیار فارسی و فونت وزیرمتن برای ابزارهای هوش مصنوعی"; Tasks: desktopicon
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: "wscript.exe ""{app}\{#MyAppExeName}"" --tray"; Flags: uninsdeletevalue; Tasks: autostart
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """{app}\{#MyAppExeName}"" --tray"; Flags: uninsdeletevalue; Tasks: autostart
 
 [Run]
-Filename: "wscript.exe"; Parameters: """{app}\{#MyAppExeName}"""; Description: "اجرای PersianFixer پس از اتمام نصب"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "اجرای PersianFixer پس از اتمام نصب"; Flags: nowait postinstall skipifsilent

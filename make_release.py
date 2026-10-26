@@ -149,7 +149,7 @@ def main():
     os.makedirs(stage_dir, exist_ok=True)
 
     files_to_copy = [
-        "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py",
+        "PersianFixer.exe", "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py",
         "make_release.bat", "make_release.py", "installer.iss",
         "gui.py", "patcher.py", "watcher.py", "config.py", "font_installer.py", "autostart.py", "persian_engine.js",
         "asar_patcher.js", "requirements.txt", "package.json",

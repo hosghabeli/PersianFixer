@@ -35,7 +35,10 @@ def is_font_installed():
 def install_vazirmatn_font(font_path=None):
     """Installs Vazirmatn TTF font for current user safely."""
     if font_path is None:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
+        if getattr(sys, 'frozen', False):
+            script_dir = os.path.dirname(sys.executable)
+        else:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
         font_path = os.path.join(script_dir, "fonts", "Vazirmatn.ttf")
 
     if not os.path.isfile(font_path):

@@ -23,6 +23,24 @@ jobs:
       - name: Install Node Dependencies
         run: npm install
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python Dependencies & PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Standalone Executable (PersianFixer.exe)
+        shell: pwsh
+        run: |
+          pyinstaller --onefile --noconsole --name "PersianFixer" --icon "icon.ico" --hidden-import "pystray._win32" --hidden-import "PIL._tkinter_finder" --hidden-import "config" --hidden-import "watcher" --hidden-import "patcher" --hidden-import "font_installer" --hidden-import "autostart" gui.py
+          Copy-Item "dist/PersianFixer.exe" "PersianFixer.exe" -Force
+          Write-Output "PersianFixer.exe built successfully."
+
       - name: Package Windows ZIP
         shell: pwsh
         run: |
@@ -31,7 +49,7 @@ jobs:
           if (Test-Path $stage) { Remove-Item -Recurse -Force $stage }
           New-Item -ItemType Directory -Path $stage
 
-          Copy-Item "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py", "gui.py", "patcher.py", "font_installer.py", "autostart.py", "persian_engine.js", "asar_patcher.js", "requirements.txt", "package.json", "icon.ico", "icon.png", "README.md", "LICENSE" -Destination $stage
+          Copy-Item "PersianFixer.exe", "PersianFixer.vbs", "run.bat", "update_icon.bat", "update_icon.py", "gui.py", "patcher.py", "watcher.py", "config.py", "font_installer.py", "autostart.py", "persian_engine.js", "asar_patcher.js", "requirements.txt", "package.json", "icon.ico", "icon.png", "README.md", "LICENSE" -Destination $stage
           Copy-Item -Recurse "fonts" -Destination $stage
           Copy-Item -Recurse "node_modules" -Destination $stage
 

@@ -7,6 +7,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
 # Backups & temporary files
 *.bak
 *.tmp

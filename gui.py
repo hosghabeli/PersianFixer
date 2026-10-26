@@ -86,7 +86,10 @@ BTN_DARK_HOVER = "#30363d"
 BTN_PRIMARY = "#238636"
 BTN_PRIMARY_HOVER = "#2ea043"
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, 'frozen', False):
+    SCRIPT_DIR = os.path.dirname(sys.executable)
+else:
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ICON_ICO = os.path.join(SCRIPT_DIR, "icon.ico")
 ICON_PNG = os.path.join(SCRIPT_DIR, "icon.png")
 
