@@ -6,7 +6,7 @@
   <h3>حل هوشمند مشکل زبان فارسی و فونت وزیرمتن در نرم‌افزارهای هوش مصنوعی و کدنویسی</h3>
   <p><strong>Smart RTL & Google Vazirmatn Font Engine for Windows Desktop & Chromium Browsers (Edge, Chrome)</strong></p>
 
-  [![Version](https://img.shields.io/badge/version-v3.12.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
+  [![Version](https://img.shields.io/badge/version-v3.13.0-blue.svg)](https://github.com/hosghabeli/PersianFixer/releases)
   [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows)](https://github.com/hosghabeli/PersianFixer)
   [![Browsers](https://img.shields.io/badge/browsers-Edge%20%7C%20Chrome%20%7C%20Brave-008080.svg?logo=microsoftedge)](https://github.com/hosghabeli/PersianFixer)
   [![Font](https://img.shields.io/badge/font-Google%20Vazirmatn%20(Variable)-green.svg)](https://fonts.google.com/specimen/Vazirmatn)
@@ -64,7 +64,7 @@
 
 ### روش ۱: نرم‌افزار دسکتاپ ویندوز (برای ابزارهای دسکتاپ)
 به بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) مراجعه کرده و آخرین نسخه را دریافت کنید:
-1. فایل نصاب `PersianFixer-v3.12.0-Setup.exe` را اجرا و نصب کنید (یا نسخه پرتابل `PersianFixer-v3.12.0-windows.zip` را استخراج کنید).
+1. فایل نصاب `PersianFixer-v3.13.0-Setup.exe` را اجرا و نصب کنید (یا نسخه پرتابل `PersianFixer-v3.13.0-windows.zip` را استخراج کنید).
 2. برنامه را باز کرده و روی دکمه بزرگ **«فعال‌سازی هوشمند تمام ابزارها»** کلیک کنید.
 3. نرم‌افزارهای خود (VS Code, Antigravity, Claude و...) را اجرا کرده و از زبان فارسی روان لذت ببرید!
 
@@ -72,7 +72,7 @@
 
 ### روش ۲: نصب در مرورگر Microsoft Edge (مایکروسافت اج)
 اکستنشن PersianFixer به طور ۱۰۰٪ از مرورگر مایکروسافت اج و **سایدبار کوپایلوت اج** پشتیبانی می‌کند:
-1. فایل `PersianFixer-Chrome-Extension-v1.0.2.zip` را از بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) دریافت و استخراج کنید (یا از پوشه `extension` داخل مخزن استفاده کنید).
+1. فایل `PersianFixer-Chrome-Extension-v1.0.3.zip` را از بخش [Releases](https://github.com/hosghabeli/PersianFixer/releases) دریافت و استخراج کنید (یا از پوشه `extension` داخل مخزن استفاده کنید).
 2. مرورگر **Microsoft Edge** را باز کرده و به آدرس زیر بروید:
    ```text
    edge://extensions
@@ -85,7 +85,7 @@
 ---
 
 ### روش ۳: نصب در مرورگر Google Chrome (گوگل کروم)
-1. فایل `PersianFixer-Chrome-Extension-v1.0.2.zip` را استخراج کنید (یا از پوشه `extension` استفاده کنید).
+1. فایل `PersianFixer-Chrome-Extension-v1.0.3.zip` را استخراج کنید (یا از پوشه `extension` استفاده کنید).
 2. در مرورگر کروم به آدرس زیر بروید:
    ```text
    chrome://extensions
