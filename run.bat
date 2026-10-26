@@ -1,2 +1,3 @@
 @echo off
-start "" "C:\Python314\pythonw.exe" "%~dp0gui.py"
+cd /d "%~dp0"
+wscript.exe "%~dp0PersianFixer.vbs" %*

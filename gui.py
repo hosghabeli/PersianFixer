@@ -1,5 +1,31 @@
 import os
 import sys
+import subprocess
+
+# Auto-install missing requirements (Pillow, pystray) on first run if needed
+def _ensure_dependencies():
+    missing = []
+    try:
+        import PIL
+    except ImportError:
+        missing.append('Pillow')
+    try:
+        import pystray
+    except ImportError:
+        missing.append('pystray')
+    if missing:
+        python_exe = sys.executable.replace('pythonw.exe', 'python.exe')
+        try:
+            subprocess.run(
+                [python_exe, '-m', 'pip', 'install', *missing],
+                check=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+            )
+        except Exception:
+            pass
+
+_ensure_dependencies()
+
 import socket
 import threading
 import time
